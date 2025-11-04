@@ -1,10 +1,17 @@
 // src/pages/HomePage.tsx
+import { KakaoMap } from '@/components/map/KakaoMap';
+
 export default function HomePage() {
   return (
-    <div className="p-6">
-      <h1 className="text-h1 mb-4">쉼터 위치</h1>
-      <p className="text-body">무더위쉼터와 한파쉼터를 지도에서 찾아보세요.</p>
-      {/* 지도 컴포넌트가 여기에 들어갑니다 */}
+    <div className="w-full h-[calc(100vh-4rem)]">
+      {/* 지도 - 화면 높이에서 하단 탭바(4rem) 제외 */}
+      <KakaoMap
+        width="100%"
+        height="100%"
+        latitude={37.5665}
+        longitude={126.9780}
+        level={3}
+      />
     </div>
   );
 }
