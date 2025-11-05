@@ -210,3 +210,22 @@ body.typography-senior {
     font-family: var(--font-sans);
   }
 }
+
+/* 모달 애니메이션 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}

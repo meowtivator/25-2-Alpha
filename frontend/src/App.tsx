@@ -8,6 +8,7 @@ import { MainLayout } from '@/components/layout/MainLayout';
 import HomePage from '@/pages/HomePage';
 import HelperPage from '@/pages/HelperPage';
 import SettingsPage from '@/pages/SettingsPage';
+import SearchPage from '@/pages/SearchPage';
 import { ROUTES } from '@/lib/constants/routes';
 import { useSettingsStore } from '@/stores/settingsStore';
 import { ENV } from '@/config/env';
@@ -75,6 +76,8 @@ function App() {
             <Route path={ROUTES.HELPER} element={<HelperPage />} />
             <Route path={ROUTES.SETTINGS} element={<SettingsPage />} />
           </Route>
+          {/* 검색 페이지 - MainLayout 없이 전체 화면 */}
+          <Route path="/search" element={<SearchPage />} />
           <Route path="*" element={<Navigate to={ROUTES.HOME} replace />} />
         </Routes>
       </BrowserRouter>

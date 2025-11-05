@@ -65,7 +65,7 @@ export const useSettingsStore = create<SettingsStore>()(
       showSeniorFacilities: true,
       setShowSeniorFacilities: (show) => set({ showSeniorFacilities: show }),
 
-      showColdShelters: true,
+      showColdShelters: false,
       setShowColdShelters: (show) => set({ showColdShelters: show }),
 
       // 앱 설정 기본값
