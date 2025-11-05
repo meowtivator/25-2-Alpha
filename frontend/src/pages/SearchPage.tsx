@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, X, CircleAlert } from 'lucide-react';
 import { SearchBar } from '@/components/ui/SearchBar';
 import { SearchResultItem } from '@/components/search/SearchResultItem';
-import { SearchResultItemModal } from '@/components/search/SearchResultItemModal';
 
 // 쉼터 검색 결과 타입 정의
 interface ShelterResult {
