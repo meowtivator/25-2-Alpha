@@ -24,14 +24,14 @@ const tabs = [
 export function BottomTabBar() {
   const location = useLocation();
   const pathname = location.pathname;
-  
+
   return (
     <nav className="bg-blue-50 border-t border-blue-100 shadow-lg">
       <div className="flex items-center justify-around h-16 max-w-md mx-auto">
         {tabs.map((tab) => {
           const isActive = pathname === tab.href;
           const Icon = tab.icon;
-          
+
           return (
             <Link
               key={tab.name}
