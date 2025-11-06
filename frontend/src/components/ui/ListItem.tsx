@@ -15,7 +15,7 @@ export function ListItem({
   value,
   onClick,
   rightContent,
-  showArrow = false
+  showArrow = false,
 }: ListItemProps) {
   const isClickable = !!onClick;
 
@@ -31,13 +31,9 @@ export function ListItem({
       <span className="text-body text-foreground">{label}</span>
 
       <div className="flex items-center gap-2 pointer-events-none">
-        {value && (
-          <span className="text-body text-foreground/60">{value}</span>
-        )}
+        {value && <span className="text-body text-foreground/60">{value}</span>}
         {rightContent}
-        {showArrow && (
-          <ChevronRight className="w-8 h-8 text-foreground/60" />
-        )}
+        {showArrow && <ChevronRight className="w-8 h-8 text-foreground/60" />}
       </div>
     </button>
   );

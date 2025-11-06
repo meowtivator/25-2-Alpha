@@ -14,7 +14,7 @@ export function KakaoMap({
   width = '100%',
   height = '400px',
   latitude = 37.5665, // 서울시청 기본 좌표
-  longitude = 126.9780,
+  longitude = 126.978,
   level = 3,
 }: KakaoMapProps) {
   const [center] = useState({

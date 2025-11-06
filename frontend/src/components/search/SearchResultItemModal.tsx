@@ -96,7 +96,9 @@ export function SearchResultItemModal({
                     <span className="text-body font-semibold text-foreground min-w-[80px]">
                       도로명
                     </span>
-                    <span className="text-body text-foreground">{detailAddress}</span>
+                    <span className="text-body text-foreground">
+                      {detailAddress}
+                    </span>
                   </div>
                 )}
                 {address && (
@@ -125,7 +127,9 @@ export function SearchResultItemModal({
                     <span className="text-body font-semibold text-foreground min-w-[80px]">
                       운영시간
                     </span>
-                    <span className="text-body text-foreground">{operatingHours}</span>
+                    <span className="text-body text-foreground">
+                      {operatingHours}
+                    </span>
                   </div>
                 )}
               </div>

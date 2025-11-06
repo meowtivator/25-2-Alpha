@@ -44,7 +44,9 @@ function App() {
       <div className="flex items-center justify-center min-h-screen bg-background">
         <div className="text-center">
           <div className="text-h2 text-foreground mb-2">로딩 중...</div>
-          <div className="text-body text-foreground/60">지도를 불러오는 중입니다.</div>
+          <div className="text-body text-foreground/60">
+            지도를 불러오는 중입니다.
+          </div>
         </div>
       </div>
     );

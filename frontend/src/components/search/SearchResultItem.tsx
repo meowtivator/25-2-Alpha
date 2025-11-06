@@ -70,7 +70,9 @@ export function SearchResultItem({
               <span className="text-caption font-medium text-foreground/60 min-w-[60px]">
                 상세주소
               </span>
-              <span className="text-caption text-foreground">{detailAddress}</span>
+              <span className="text-caption text-foreground">
+                {detailAddress}
+              </span>
             </div>
           )}
           {phone && (
@@ -91,7 +93,9 @@ export function SearchResultItem({
               <span className="text-caption font-medium text-foreground/60 min-w-[60px]">
                 운영시간
               </span>
-              <span className="text-caption text-foreground">{operatingHours}</span>
+              <span className="text-caption text-foreground">
+                {operatingHours}
+              </span>
             </div>
           )}
         </div>
