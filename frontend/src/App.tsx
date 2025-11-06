@@ -77,7 +77,7 @@ function App() {
             <Route path={ROUTES.SETTINGS} element={<SettingsPage />} />
           </Route>
           {/* 검색 페이지 - MainLayout 없이 전체 화면 */}
-          <Route path="/search" element={<SearchPage />} />
+          <Route path={ROUTES.SEARCH} element={<SearchPage />} />
           <Route path="*" element={<Navigate to={ROUTES.HOME} replace />} />
         </Routes>
       </BrowserRouter>
