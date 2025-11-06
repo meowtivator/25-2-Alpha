@@ -51,9 +51,7 @@ export function SearchBar({
             {leftIcon}
           </button>
         ) : (
-          <div className="p-2 pl-3 text-foreground/70">
-            {leftIcon}
-          </div>
+          <div className="p-2 pl-3 text-foreground/70">{leftIcon}</div>
         )}
 
         {/* Input */}
@@ -83,4 +81,3 @@ export function SearchBar({
     </form>
   );
 }
-

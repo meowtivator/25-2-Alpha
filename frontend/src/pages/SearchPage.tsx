@@ -79,9 +79,7 @@ export default function SearchPage() {
         autoFocus={true}
       />
 
-      <button 
-        className="ml-3 px-5 py-2 text-caption rounded-full border-2 border-blue-200 text-foreground mb-3"
-      >
+      <button className="ml-3 px-5 py-2 text-caption rounded-full border-2 border-blue-200 text-foreground mb-3">
         최근 검색
         {/* TODO: onClick={() => 최근 검색 기록} */}
       </button>
@@ -115,8 +113,12 @@ export default function SearchPage() {
             )}
           </div>
         ) : (
-          <div className='flex flex-col relative top-2/5 items-center justify-center'>
-            <CircleAlert size={60} strokeWidth={1.5} className='text-blue-900'/>
+          <div className="flex flex-col relative top-2/5 items-center justify-center">
+            <CircleAlert
+              size={60}
+              strokeWidth={1.5}
+              className="text-blue-900"
+            />
             <p className="text-center text-foreground py-4">
               쉼터의 이름, 주소를 검색하세요.
             </p>

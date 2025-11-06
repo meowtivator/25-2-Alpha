@@ -18,7 +18,7 @@ export default function HomePage() {
         width="100%"
         height="100%"
         latitude={37.5665}
-        longitude={126.9780}
+        longitude={126.978}
         level={3}
       />
 

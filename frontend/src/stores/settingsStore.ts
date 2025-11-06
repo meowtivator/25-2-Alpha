@@ -29,7 +29,7 @@ interface SettingsStore {
 }
 
 // typescript의 generic으로 타입 지정.
-// 이중괄호 ()() => Currying 
+// 이중괄호 ()() => Currying
 // TypeScript 타입 추론을 정확하게 하기 위해서 사용 -> 미들웨어와 타입을 같이 사용할 때 필요한 문법
 // const createStore = create<SettingStore>(); create() 함수 실행
 // const store = createStore(persist(...)); 반환된 함수에 persist를 전달
@@ -44,10 +44,14 @@ export const useSettingsStore = create<SettingsStore>()(
       // 타이포그래피 모드 변경
       setTypographyMode: (mode) => {
         // typographyMode 변경 시 textSize도 함께 변경
-        const size: 'default' | 'large' = mode === 'senior' ? 'large' : 'default';
+        const size: 'default' | 'large' =
+          mode === 'senior' ? 'large' : 'default';
         set({ typographyMode: mode, textSize: size });
         // body에 클래스 적용
-        document.body.classList.remove('typography-default', 'typography-senior');
+        document.body.classList.remove(
+          'typography-default',
+          'typography-senior'
+        );
         document.body.classList.add(`typography-${mode}`);
       },
 
@@ -58,7 +62,10 @@ export const useSettingsStore = create<SettingsStore>()(
         const mode: TypographyMode = size === 'large' ? 'senior' : 'default';
         set({ textSize: size, typographyMode: mode });
         // body에 클래스 적용
-        document.body.classList.remove('typography-default', 'typography-senior');
+        document.body.classList.remove(
+          'typography-default',
+          'typography-senior'
+        );
         document.body.classList.add(`typography-${mode}`);
       },
 

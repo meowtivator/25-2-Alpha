@@ -1,7 +1,7 @@
 /* src/index.css */
 
 /* ⭐ Tailwind CSS v4 임포트 */
-@import "tailwindcss";
+@import 'tailwindcss';
 
 /* CSS 변수 정의 */
 :root {
@@ -15,8 +15,9 @@
   --color-foreground: var(--foreground);
 
   /* 폰트 패밀리 */
-  --font-sans: "Pretendard Variable", Pretendard, -apple-system,
-    BlinkMacSystemFont, system-ui, sans-serif;
+  --font-sans:
+    'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont,
+    system-ui, sans-serif;
 
   /* Blue 색상 팔레트 */
   --color-blue-50: #edf4ff;
