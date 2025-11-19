@@ -1,6 +1,6 @@
 // src/components/search/SearchResultItemModal.tsx
 import { useState } from 'react';
-import { ChevronDown, ChevronUp, X } from 'lucide-react';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 
 interface SearchResultItemModalProps {
   name: string;
@@ -15,8 +15,8 @@ export function SearchResultItemModal({
   name,
   address,
   detailAddress,
-  phone,
-  operatingHours,
+  // phone,
+  // operatingHours,
   onNavigate,
 }: SearchResultItemModalProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
