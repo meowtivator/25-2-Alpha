@@ -1,10 +1,9 @@
 // src/pages/HelperPage.tsx
 import { useState } from 'react';
-import type { SymptomResponses, SymptomResponse, SymptomAnswer } from '@/types/symptom';
+import type { SymptomAnswer } from '@/types/symptom';
 import { useSymptomQuestions } from '@/hooks/useSymptomQuestions';
 
 export default function HelperPage() {
-  const [result, setResult] = useState<SymptomResponse | null>(null);
   const [showIntro, setShowIntro] = useState(true);
   const [isSeleted, setIsSelected] = useState(false);
   const { questions, loading, error, retry} = useSymptomQuestions();
