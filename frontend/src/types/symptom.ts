@@ -1,6 +1,25 @@
 // src/types/symptom.ts
 
 /**
+ * 증상 질문 타입 (GET /api/symptom/questions)
+ */
+export interface SymptomQuestion {
+  id: number;
+  questionText: string;
+  questionCode: string;
+  symptomCode: string;
+  sortOrder: number;
+  active: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface SymptomAnswer {
+  questionCode: string;
+  answer: boolean;
+}
+
+/**
  * 증상 응답 인터페이스
  * 각 필드는 질문에 대한 Yes(true)/No(false) 응답
  */
@@ -16,15 +35,6 @@ export interface SymptomResponses {
   hasAbdominalPain: boolean; // 복통
   hasJointPain: boolean; // 관절통
   hasRunnyNose: boolean; // 콧물
-}
-
-/**
- * 증상 질문 타입
- */
-export interface SymptomQuestion {
-  id: string;
-  text: string;
-  field: keyof SymptomResponses;
 }
 
 /**
