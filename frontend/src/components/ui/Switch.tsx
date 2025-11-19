@@ -19,14 +19,14 @@ export function Switch({ checked, onChange, disabled = false }: SwitchProps) {
       disabled={disabled}
       onClick={handleClick}
       className={`
-        relative inline-flex h-8 w-14 items-center rounded-full transition-colors
+        relative inline-flex h-8 w-14 items-center border rounded-full transition-colors
         ${disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}
-        ${checked ? 'bg-blue-600' : 'bg-foreground/20'}
+        ${checked ? 'bg-blue-200' : 'bg-transparent'}
       `}
     >
       <span
         className={`
-          inline-block h-6 w-6 transform rounded-full bg-background transition-transform shadow-sm
+          inline-block h-6 w-6 transform rounded-full bg-blue-900 transition-transform shadow-sm
           ${checked ? 'translate-x-7' : 'translate-x-1'}
         `}
       />

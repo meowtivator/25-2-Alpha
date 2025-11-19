@@ -1,23 +1,23 @@
 // src/components/layout/BottomTabBar.tsx
 import { Link, useLocation } from 'react-router-dom';
-import { Home, ArrowUp, Settings } from 'lucide-react';
+import { MarkerIcon, SettingIcon, SymptomsIcon } from '@/assets/icons';
 import { ROUTES } from '@/lib/constants/routes';
 
 const tabs = [
   {
     name: '쉼터 위치',
     href: ROUTES.HOME,
-    icon: Home,
+    icon: MarkerIcon,
   },
   {
     name: '증상도우미',
     href: ROUTES.HELPER,
-    icon: ArrowUp,
+    icon: SymptomsIcon,
   },
   {
     name: '설정',
     href: ROUTES.SETTINGS,
-    icon: Settings,
+    icon: SettingIcon,
   },
 ];
 
@@ -36,12 +36,13 @@ export function BottomTabBar() {
             <Link
               key={tab.name}
               to={tab.href}
+              draggable={false}
               className={`
                 flex flex-col items-center justify-center flex-1 h-full transition-colors
                 ${
                   isActive
-                    ? 'text-blue-700'
-                    : 'text-blue-600 hover:text-blue-700'
+                    ? 'text-blue-900'
+                    : 'text-blue-200 hover:text-blue-500'
                 }
               `}
             >

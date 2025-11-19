@@ -26,11 +26,11 @@ export function ToggleButtons({
           key={option.value}
           onClick={handleClick(option.value)}
           className={`
-            flex-1 px-5 py-2 rounded-full border-2 transition-all text-body
+            flex-1 px-5 py-1.5 rounded-full border transition-all text-body bg-transparent border-blue-900
             ${
               value === option.value
-                ? 'bg-blue-600 border-blue-600 text-white'
-                : 'bg-background border-foreground/20 text-foreground hover:border-foreground/30'
+                ? ' text-blue-900'
+                : 'text-blue-200'
             }
             `}
         >

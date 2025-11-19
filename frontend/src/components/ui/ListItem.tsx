@@ -33,7 +33,7 @@ export function ListItem({
       <div className="flex items-center gap-2 pointer-events-none">
         {value && <span className="text-body text-foreground/60">{value}</span>}
         {rightContent}
-        {showArrow && <ChevronRight className="w-8 h-8 text-foreground/60" />}
+        {showArrow && <ChevronRight className="w-10 h-10 text-blue-900" />}
       </div>
     </button>
   );

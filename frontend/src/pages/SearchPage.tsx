@@ -1,19 +1,11 @@
 // src/pages/SearchPage.tsx
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, X, CircleAlert } from 'lucide-react';
+import { ChevronLeft, X } from 'lucide-react';
 import { SearchBar } from '@/components/ui/SearchBar';
-import { SearchResultItem } from '@/components/search/SearchResultItem';
-
-// 쉼터 검색 결과 타입 정의
-interface ShelterResult {
-  id: string;
-  name: string;
-  address: string;
-  detailAddress?: string;
-  phone?: string;
-  operatingHours?: string;
-}
+import type { ShelterResult } from '@/types/shelter';
+import { SearchResultItemModal } from '@/components/search/SearchResultItemModal';
+import { AlertIcon } from '@/assets/icons';
 
 export default function SearchPage() {
   const navigate = useNavigate();
@@ -36,6 +28,8 @@ export default function SearchPage() {
         detailAddress: '서울 성북구 정릉로 123',
         phone: '02-1234-5678',
         operatingHours: '09:00 - 18:00',
+        latitude: 37.6105,
+        longitude: 127.0094,
       },
       {
         id: '2',
@@ -44,17 +38,23 @@ export default function SearchPage() {
         detailAddress: '서울 성북구 정릉로 456',
         phone: '02-2345-6789',
         operatingHours: '10:00 - 17:00',
+        latitude: 37.6095,
+        longitude: 127.0084,
       },
       {
         id: '3',
         name: '정릉3동경로당',
         address: '서울 성북구 정릉동',
         detailAddress: '서울 성북구 정릉로 789',
+        latitude: 37.6085,
+        longitude: 127.0074,
       },
       {
         id: '4',
         name: '정릉푸르지오(아)경로당',
         address: '서울 성북구 정릉동',
+        latitude: 37.6075,
+        longitude: 127.0064,
       },
     ]);
   };
@@ -87,15 +87,12 @@ export default function SearchPage() {
       <div className="overflow-y-auto h-[calc(100%-76px)]">
         {searchValue ? (
           <div className="px-4 py-3">
-            <p className="text-sm text-foreground/60 mb-3">
-              '{searchValue}' 검색 결과 {searchResults.length}개
-            </p>
 
             {/* 검색 결과 리스트 */}
             {searchResults.length > 0 ? (
               <div className="">
                 {searchResults.map((result) => (
-                  <SearchResultItem
+                  <SearchResultItemModal
                     key={result.id}
                     name={result.name}
                     address={result.address}
@@ -107,19 +104,18 @@ export default function SearchPage() {
                 ))}
               </div>
             ) : (
-              <p className="text-center text-foreground/60 py-8">
+              <p className="text-alert text-foreground/60 py-8">
                 검색 결과가 없습니다
               </p>
             )}
           </div>
         ) : (
           <div className="flex flex-col relative top-2/5 items-center justify-center">
-            <CircleAlert
+            <AlertIcon
               size={60}
-              strokeWidth={1.5}
               className="text-blue-900"
             />
-            <p className="text-center text-foreground py-4">
+            <p className="text-alert text-foreground py-4">
               쉼터의 이름, 주소를 검색하세요.
             </p>
           </div>

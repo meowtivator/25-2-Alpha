@@ -25,13 +25,13 @@ export default function SettingsPage() {
     <div className="min-h-screen bg-background">
       {/* 헤더 */}
       <header className="bg-blue-50 border-b border-foreground/10">
-        <div className="flex items-center px-4 py-3">
+        <div className="flex items-center px-4">
           <button
             onClick={() => navigate(-1)}
-            className="p-2 -ml-2"
+            className="p-2 -ml-4"
             aria-label="뒤로가기"
           >
-            <ChevronLeft className="w-8 h-8 text-blue-500" />
+            <ChevronLeft className="w-12 h-12 text-blue-100" />
           </button>
           <h1 className="flex-1 text-center text-h2">설정</h1>
           <div className="w-10" /> {/* 중앙 정렬을 위한 스페이서 */}

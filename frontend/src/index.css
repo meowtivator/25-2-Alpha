@@ -82,6 +82,7 @@ body.typography-default {
   --line-height-caption: 21px;
   --line-height-button: 24px;
   --line-height-nav: 24px;
+  --line-height-alert: 24px;
 
   /* Letter Spacing */
   --letter-spacing-h1: -0.3px;
@@ -91,6 +92,8 @@ body.typography-default {
   --letter-spacing-caption: -0.1px;
   --letter-spacing-button: 0px;
   --letter-spacing-nav: 0px;
+  --letter-spacing-alert: -0.1px;
+
 }
 
 /* ========================================
@@ -130,6 +133,7 @@ body.typography-senior {
   --line-height-caption: 27px; /* 21 → 27 */
   --line-height-button: 30px; /* 24 → 30 */
   --line-height-nav: 30px; /* 24 → 30 */
+  --line-height-alert: 30px;
 
   /* Letter Spacing - 고령층용 (가독성 향상) */
   --letter-spacing-h1: -0.4px;
@@ -139,6 +143,8 @@ body.typography-senior {
   --letter-spacing-caption: -0.2px;
   --letter-spacing-button: 0px;
   --letter-spacing-nav: 0px;
+  --letter-spacing-alert: -0.2px;
+
 }
 
 /* ========================================
@@ -201,6 +207,13 @@ body.typography-senior {
     line-height: var(--line-height-nav);
     letter-spacing: var(--letter-spacing-nav);
   }
+
+  .text-alert {
+    font-size: var(--font-size-alert);
+    font-weight: var(--font-weight-alert);
+    line-height: var(--line-height-alert);
+    letter-spacing: var(--letter-spacing-alert);
+  }
 }
 
 /* 베이스 스타일 */
@@ -227,6 +240,17 @@ body.typography-senior {
     transform: translateY(100%);
   }
   to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
     transform: translateY(0);
   }
 }
