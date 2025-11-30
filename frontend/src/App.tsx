@@ -5,8 +5,11 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useKakaoLoader } from 'react-kakao-maps-sdk';
 
 import { MainLayout } from '@/components/layout/MainLayout';
+import OnboardingPage from '@/pages/OnboardingPage';
 import HomePage from '@/pages/HomePage';
 import HelperPage from '@/pages/HelperPage';
+import DiagnosisResultPage from '@/pages/DiagnosisResultPage';
+import GuidelinePage from '@/pages/GuidelinePage';
 import SettingsPage from '@/pages/SettingsPage';
 import SearchPage from '@/pages/SearchPage';
 import { ROUTES } from '@/lib/constants/routes';
@@ -73,14 +76,22 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <Routes>
+          {/* 온보딩 페이지 - MainLayout 없이 전체 화면 */}
+          <Route path={ROUTES.ONBOARDING} element={<OnboardingPage />} />
+
           <Route element={<MainLayout />}>
             <Route path={ROUTES.HOME} element={<HomePage />} />
             <Route path={ROUTES.HELPER} element={<HelperPage />} />
+            <Route
+              path={ROUTES.DIAGNOSIS_RESULT}
+              element={<DiagnosisResultPage />}
+            />
+            <Route path={ROUTES.GUIDELINE} element={<GuidelinePage />} />
             <Route path={ROUTES.SETTINGS} element={<SettingsPage />} />
           </Route>
           {/* 검색 페이지 - MainLayout 없이 전체 화면 */}
           <Route path={ROUTES.SEARCH} element={<SearchPage />} />
-          <Route path="*" element={<Navigate to={ROUTES.HOME} replace />} />
+          <Route path="*" element={<Navigate to={ROUTES.ONBOARDING} replace />} />
         </Routes>
       </BrowserRouter>
     </QueryClientProvider>
