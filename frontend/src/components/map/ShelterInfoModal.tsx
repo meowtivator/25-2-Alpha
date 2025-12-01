@@ -1,9 +1,9 @@
 // src/components/map/ShelterInfoModal.tsx
 import { useState, useRef, useEffect } from 'react';
-import type { ShelterResult } from '@/types/shelter';
+import type { ShelterDetail } from '@/types/shelter';
 
 interface ShelterInfoModalProps {
-  shelter: ShelterResult;
+  shelter: ShelterDetail;
   onClose: () => void;
 }
 
@@ -176,14 +176,14 @@ export function ShelterInfoModal({ shelter, onClose }: ShelterInfoModalProps) {
           </div>
 
           {/* 정보 섹션 */}
-          <div className="space-y-4">
+          <div className="space-y-4 overflow-y-auto">
             {/* 도로명 - 항상 표시 */}
             <div className="flex items-start gap-3">
               <span className="text-body font-semibold text-foreground min-w-[80px]">
                 도로명
               </span>
               <span className="text-body text-foreground">
-                {shelter.detailAddress || '-'}
+                {shelter.addrRoad || '-'}
               </span>
             </div>
 
@@ -193,7 +193,7 @@ export function ShelterInfoModal({ shelter, onClose }: ShelterInfoModalProps) {
                 지번
               </span>
               <span className="text-body text-foreground">
-                {shelter.address || '-'}
+                {shelter.addrJibun || '-'}
               </span>
             </div>
 
@@ -205,16 +205,40 @@ export function ShelterInfoModal({ shelter, onClose }: ShelterInfoModalProps) {
               <span className="text-body font-semibold text-foreground min-w-[80px]">
                 분류
               </span>
-              <span className="text-body text-foreground">누구나 이용 가능</span>
+              <span className="text-body text-foreground">
+                {shelter.category || '-'} / {shelter.type || '-'}
+              </span>
             </div>
 
             {/* 운영시간 - 항상 표시 */}
             <div className="flex items-start gap-3">
               <span className="text-body font-semibold text-foreground min-w-[80px]">
-                운영시간
+                평일 운영
               </span>
               <span className="text-body text-foreground">
-                {shelter.operatingHours || '-'}
+                {shelter.weekdayOpenTime && shelter.weekdayCloseTime
+                  ? `${shelter.weekdayOpenTime} - ${shelter.weekdayCloseTime}`
+                  : '-'}
+              </span>
+            </div>
+
+            {/* 야간 운영 */}
+            <div className="flex items-start gap-3">
+              <span className="text-body font-semibold text-foreground min-w-[80px]">
+                야간 운영
+              </span>
+              <span className="text-body text-foreground">
+                {shelter.nightOpen ? '가능' : '불가능'}
+              </span>
+            </div>
+
+            {/* 주말 운영 */}
+            <div className="flex items-start gap-3">
+              <span className="text-body font-semibold text-foreground min-w-[80px]">
+                주말 운영
+              </span>
+              <span className="text-body text-foreground">
+                {shelter.weekendOpen ? '가능' : '불가능'}
               </span>
             </div>
 
@@ -223,7 +247,9 @@ export function ShelterInfoModal({ shelter, onClose }: ShelterInfoModalProps) {
               <span className="text-body font-semibold text-foreground min-w-[80px]">
                 시설 면적
               </span>
-              <span className="text-body text-foreground">-</span>
+              <span className="text-body text-foreground">
+                {shelter.area ? `${shelter.area}㎡` : '-'}
+              </span>
             </div>
 
             {/* 이용 가능 인원 - 항상 표시 */}
@@ -231,7 +257,9 @@ export function ShelterInfoModal({ shelter, onClose }: ShelterInfoModalProps) {
               <span className="text-body font-semibold text-foreground min-w-[80px]">
                 이용 가능 인원
               </span>
-              <span className="text-body text-foreground">-</span>
+              <span className="text-body text-foreground">
+                {shelter.capacity ? `${shelter.capacity}명` : '-'}
+              </span>
             </div>
 
             {/* 선풍기 보유 - 항상 표시 */}
@@ -239,7 +267,9 @@ export function ShelterInfoModal({ shelter, onClose }: ShelterInfoModalProps) {
               <span className="text-body font-semibold text-foreground min-w-[80px]">
                 선풍기 보유
               </span>
-              <span className="text-body text-foreground">-</span>
+              <span className="text-body text-foreground">
+                {shelter.fanCount ? `${shelter.fanCount}대` : '-'}
+              </span>
             </div>
 
             {/* 에어컨 보유 - 항상 표시 */}
@@ -247,16 +277,8 @@ export function ShelterInfoModal({ shelter, onClose }: ShelterInfoModalProps) {
               <span className="text-body font-semibold text-foreground min-w-[80px]">
                 에어컨 보유
               </span>
-              <span className="text-body text-foreground">-</span>
-            </div>
-
-            {/* 전화번호 - 항상 표시 */}
-            <div className="flex items-start gap-3">
-              <span className="text-body font-semibold text-foreground min-w-[80px]">
-                전화번호
-              </span>
               <span className="text-body text-foreground">
-                {shelter.phone || '-'}
+                {shelter.airconCount ? `${shelter.airconCount}대` : '-'}
               </span>
             </div>
           </div>

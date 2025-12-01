@@ -5,7 +5,7 @@ import { Search } from 'lucide-react';
 import { KakaoMap } from '@/components/map/KakaoMap';
 import { SearchBar } from '@/components/ui/SearchBar';
 import { ShelterInfoModal } from '@/components/map/ShelterInfoModal';
-import type { ShelterResult } from '@/types/shelter';
+import type { ShelterDetail } from '@/types/shelter';
 import { ROUTES } from '@/lib/constants/routes';
 
 export default function HomePage() {
@@ -19,21 +19,21 @@ export default function HomePage() {
   });
 
   // 선택된 쉼터 state (마커 라벨 표시용)
-  const [selectedShelter, setSelectedShelter] = useState<ShelterResult | null>(
+  const [selectedShelter, setSelectedShelter] = useState<ShelterDetail | null>(
     null,
   );
 
   // SearchPage에서 전달받은 state 처리
   useEffect(() => {
-    const state = location.state as { selectedShelter?: ShelterResult };
+    const state = location.state as { selectedShelter?: ShelterDetail };
 
     if (state?.selectedShelter) {
       const shelter = state.selectedShelter;
 
       // 백엔드에서 좌표를 제공하므로 바로 사용
       setMapCenter({
-        latitude: shelter.latitude,
-        longitude: shelter.longitude,
+        latitude: shelter.lat,
+        longitude: shelter.lon,
       });
 
       // 선택된 쉼터 저장 (마커 라벨 표시용)

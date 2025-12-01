@@ -6,4 +6,6 @@ export const ROUTES = {
   GUIDELINE: '/helper/guideline',
   SETTINGS: '/settings',
   SEARCH: '/search',
+  HOSPITAL_MAP: '/hospital',
+  HOSPITAL_SEARCH: '/hospital/search',
 } as const;

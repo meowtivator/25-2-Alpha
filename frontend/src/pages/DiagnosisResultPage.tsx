@@ -16,14 +16,6 @@ export default function DiagnosisResultPage() {
     return null;
   }
 
-  // const diagnosisResult: DiagnosisResponse = {
-  //   assessmentId: 1,
-  //   suspected: true,
-  //   headline: "온열 질환 의심",
-  //   description: "온열질환이 의심됩니다 어쩌구",
-  //   severity: 'low',
-  // };
-
   // 대처 방안 확인하기
   const handleViewGuidelines = () => {
     navigate(ROUTES.GUIDELINE, {
@@ -36,9 +28,7 @@ export default function DiagnosisResultPage() {
 
   // 내 주변 병원 찾기
   const handleFindHospital = () => {
-    // TODO: 지도 페이지로 이동하여 병원 검색
-    navigate(ROUTES.HOME);
-    console.log('내 주변 병원 찾기');
+    navigate(ROUTES.HOSPITAL_MAP);
   };
 
   // 다시 진단하기

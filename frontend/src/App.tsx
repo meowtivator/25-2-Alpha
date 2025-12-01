@@ -12,6 +12,8 @@ import DiagnosisResultPage from '@/pages/DiagnosisResultPage';
 import GuidelinePage from '@/pages/GuidelinePage';
 import SettingsPage from '@/pages/SettingsPage';
 import SearchPage from '@/pages/SearchPage';
+import HospitalMapPage from '@/pages/HospitalMapPage';
+import HospitalSearchPage from '@/pages/HospitalSearchPage';
 import { ROUTES } from '@/lib/constants/routes';
 import { useSettingsStore } from '@/stores/settingsStore';
 import { ENV } from '@/config/env';
@@ -91,6 +93,9 @@ function App() {
           </Route>
           {/* 검색 페이지 - MainLayout 없이 전체 화면 */}
           <Route path={ROUTES.SEARCH} element={<SearchPage />} />
+          {/* 병원 페이지 - MainLayout 없이 전체 화면 */}
+          <Route path={ROUTES.HOSPITAL_MAP} element={<HospitalMapPage />} />
+          <Route path={ROUTES.HOSPITAL_SEARCH} element={<HospitalSearchPage />} />
           <Route path="*" element={<Navigate to={ROUTES.ONBOARDING} replace />} />
         </Routes>
       </BrowserRouter>
