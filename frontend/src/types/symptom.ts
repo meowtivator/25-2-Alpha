@@ -20,6 +20,27 @@ export interface SymptomAnswer {
 }
 
 /**
+ * 증상 진단 요청 (POST /api/symptom/diagnosis)
+ */
+export interface DiagnosisRequest {
+  answers: Array<{
+    id: number;
+    answer: 'yes' | 'no';
+  }>;
+}
+
+/**
+ * 증상 진단 응답 (POST /api/symptom/diagnosis)
+ */
+export interface DiagnosisResponse {
+  assessmentId: number;
+  suspected: boolean;
+  headline: string;
+  description: string;
+  severity: 'low' | 'medium' | 'high' | 'emergency';
+}
+
+/**
  * 증상 응답 인터페이스
  * 각 필드는 질문에 대한 Yes(true)/No(false) 응답
  */
@@ -65,4 +86,39 @@ export interface SymptomResponse {
   severity: 'low' | 'medium' | 'high' | 'emergency'; // 심각도
   recommendations: string[]; // 권장사항 목록
   relatedDiseases: RelatedDisease[]; // 관련 가능 질병들
+}
+
+/**
+ * 온열질환 가이드 (suspected = false)
+ * GET /api/symptom/guides
+ */
+export interface SymptomGuide {
+  disease: string;
+  definition: string;
+  symptoms: string[];
+  advice: string[];
+}
+
+/**
+ * 상세 진단 정보 (suspected = true)
+ * GET /api/symptom/diagnosis/{assessmentId}
+ */
+export interface DiagnosisDetail {
+  assessmentId: number;
+  disease: string;
+  definition: string;
+  symptoms: string[];
+  advice: string[];
+  createdAt: string;
+}
+
+/**
+ * AI 진단 결과
+ * GET /api/symptom/assessment/{assessmentId}/ai-result
+ */
+export interface AIResult {
+  assessmentId: number;
+  summary: string;
+  detail: string;
+  createdAt: string;
 }

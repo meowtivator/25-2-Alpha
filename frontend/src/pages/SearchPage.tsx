@@ -3,66 +3,55 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, X } from 'lucide-react';
 import { SearchBar } from '@/components/ui/SearchBar';
-import type { ShelterResult } from '@/types/shelter';
+import type { ShelterSearchItem } from '@/types/shelter';
 import { SearchResultItemModal } from '@/components/search/SearchResultItemModal';
 import { AlertIcon } from '@/assets/icons';
+import { searchShelters, fetchShelterDetail } from '@/api/shelterApi';
+import { ROUTES } from '@/lib/constants/routes';
 
 export default function SearchPage() {
   const navigate = useNavigate();
   const [searchValue, setSearchValue] = useState('');
-  const [searchResults, setSearchResults] = useState<ShelterResult[]>([]);
+  const [searchResults, setSearchResults] = useState<ShelterSearchItem[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleBack = () => {
-    navigate(-1); // 이전 페이지로 이동 (HomePage)
+    navigate(-1);
   };
 
-  const handleSearch = (value: string) => {
-    console.log('검색:', value);
-    // TODO: 실제 API 호출 및 검색 로직
-    // 임시 결과 - 실제 데이터 형식에 맞춤
-    setSearchResults([
-      {
-        id: '1',
-        name: '정릉1동경로당',
-        address: '서울 성북구 정릉동',
-        detailAddress: '서울 성북구 정릉로 123',
-        phone: '02-1234-5678',
-        operatingHours: '09:00 - 18:00',
-        latitude: 37.6105,
-        longitude: 127.0094,
-      },
-      {
-        id: '2',
-        name: '정릉2동노인정',
-        address: '서울 성북구 정릉동',
-        detailAddress: '서울 성북구 정릉로 456',
-        phone: '02-2345-6789',
-        operatingHours: '10:00 - 17:00',
-        latitude: 37.6095,
-        longitude: 127.0084,
-      },
-      {
-        id: '3',
-        name: '정릉3동경로당',
-        address: '서울 성북구 정릉동',
-        detailAddress: '서울 성북구 정릉로 789',
-        latitude: 37.6085,
-        longitude: 127.0074,
-      },
-      {
-        id: '4',
-        name: '정릉푸르지오(아)경로당',
-        address: '서울 성북구 정릉동',
-        latitude: 37.6075,
-        longitude: 127.0064,
-      },
-    ]);
+  const handleSearch = async (value: string) => {
+    if (!value.trim()) {
+      setSearchResults([]);
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await searchShelters(value, 0, 20);
+      setSearchResults(response.content);
+    } catch (err) {
+      console.error('쉼터 검색 실패:', err);
+      setError('검색에 실패했습니다. 다시 시도해주세요.');
+      setSearchResults([]);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleNavigate = (shelter: ShelterResult) => {
-    console.log('길찾기:', shelter);
-    // TODO: 선택한 쉼터 정보를 가지고 지도 페이지로 이동
-    navigate('/', { state: { selectedShelter: shelter } });
+  const handleNavigate = async (shelterId: number) => {
+    try {
+      const shelterDetail = await fetchShelterDetail(shelterId);
+      navigate(ROUTES.HOME, {
+        state: {
+          selectedShelter: shelterDetail,
+        },
+      });
+    } catch (err) {
+      console.error('쉼터 정보 조회 실패:', err);
+      alert('쉼터 정보를 불러오는데 실패했습니다.');
+    }
   };
 
   return (
@@ -87,24 +76,28 @@ export default function SearchPage() {
       <div className="overflow-y-auto h-[calc(100%-76px)]">
         {searchValue ? (
           <div className="px-4 py-3">
-
-            {/* 검색 결과 리스트 */}
-            {searchResults.length > 0 ? (
+            {loading ? (
+              <p className="text-alert text-foreground/60 py-8 text-center">
+                검색 중...
+              </p>
+            ) : error ? (
+              <p className="text-alert text-red-600 py-8 text-center">
+                {error}
+              </p>
+            ) : searchResults.length > 0 ? (
               <div className="">
                 {searchResults.map((result) => (
                   <SearchResultItemModal
                     key={result.id}
                     name={result.name}
-                    address={result.address}
-                    detailAddress={result.detailAddress}
-                    phone={result.phone}
-                    operatingHours={result.operatingHours}
-                    onNavigate={() => handleNavigate(result)}
+                    address={result.shortAddress}
+                    detailAddress={result.addrRoad}
+                    onNavigate={() => handleNavigate(result.id)}
                   />
                 ))}
               </div>
             ) : (
-              <p className="text-alert text-foreground/60 py-8">
+              <p className="text-alert text-foreground/60 py-8 text-center">
                 검색 결과가 없습니다
               </p>
             )}
