@@ -9,16 +9,20 @@ import type { ShelterSearchResponse, ShelterDetail } from '@/types/shelter';
  * @param size - 페이지 크기
  * @returns 쉼터 검색 결과
  */
+type SeasonType = 'summer' | 'winter';
+
 export async function searchShelters(
   keyword: string,
   page: number = 0,
-  size: number = 20
+  size: number = 20,
+  seasonType: SeasonType = 'summer'
 ): Promise<ShelterSearchResponse> {
   try {
     const params = new URLSearchParams({
       keyword,
       page: page.toString(),
       size: size.toString(),
+      seasonType,
     });
 
     const response = await fetch(

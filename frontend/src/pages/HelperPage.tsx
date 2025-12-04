@@ -1,23 +1,56 @@
 // src/pages/HelperPage.tsx
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { SymptomAnswer } from '@/types/symptom';
 import { useSymptomQuestions } from '@/hooks/useSymptomQuestions';
+import { useTTS } from '@/hooks/useTTS';
 import { submitDiagnosis } from '@/api/symptomApi';
 import { ROUTES } from '@/lib/constants/routes';
+import { useTranslation } from 'react-i18next';
 
 export default function HelperPage() {
   const navigate = useNavigate();
   const [showIntro, setShowIntro] = useState(true);
   const [isSeleted, setIsSelected] = useState(false);
+  const [useTTSMode, setUseTTSMode] = useState(false); // TTS 모드 여부
   const { questions, loading, error, retry } = useSymptomQuestions();
   const [answers, setAnswers] = useState<SymptomAnswer[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { t } = useTranslation();
+
+  // TTS 훅 초기화
+  const { speak, stop } = useTTS({
+    lang: 'ko-KR',
+    rate: 0.9, // 약간 느리게 (더 명확하게)
+    pitch: 1.0,
+    volume: 1.0,
+  });
 
   const currentQuestion = questions[currentIndex];
 
+  // TTS 모드일 때 질문 자동 읽기
+  useEffect(() => {
+    if (useTTSMode && currentQuestion && isSeleted && !isSubmitting) {
+      // 이전 음성 중지
+      stop();
+      // 새 질문 읽기
+      speak(currentQuestion.questionText);
+    }
+  }, [currentQuestion, useTTSMode, isSeleted, isSubmitting, speak, stop]);
+
+  // 컴포넌트 언마운트 시 음성 중지
+  useEffect(() => {
+    return () => {
+      stop();
+    };
+  }, [stop]);
+
   const handleAnswer = (questionCode: string, answer: boolean) => {
+    // TTS 모드일 때 음성 중지
+    if (useTTSMode) {
+      stop();
+    }
     setAnswers((prev) => [
       ...prev.filter((a) => a.questionCode !== questionCode),
       { questionCode, answer },
@@ -66,7 +99,7 @@ export default function HelperPage() {
       });
     } catch (error) {
       console.error('진단 제출 실패:', error);
-      alert('진단 제출에 실패했습니다. 다시 시도해주세요.');
+      alert(t('diagnosisSubmitFailed'));
     } finally {
       setIsSubmitting(false);
     }
@@ -77,15 +110,21 @@ export default function HelperPage() {
     setShowIntro(false);
   };
 
-  const handleSelect = () => {
+  const handleSelectWithTTS = () => {
     setIsSelected(true);
+    setUseTTSMode(true); // TTS 모드 활성화
+  };
+
+  const handleSelectWithoutTTS = () => {
+    setIsSelected(true);
+    setUseTTSMode(false); // TTS 모드 비활성화
   };
 
 
   if (loading) {
     return(
       <div className="flex items-center justify-center h-screen">
-        <p className="text-body text-foreground">질문을 불러오는 중...</p>
+        <p className="text-body text-foreground">{t('loadingQuestions')}</p>
       </div>
     );
   }
@@ -94,13 +133,13 @@ export default function HelperPage() {
     return(
       <div className="flex flex-col items-center justify-center h-screen gap-4">
         <p className="text-body text-red-600">
-          질문을 불러오는데 실패했습니다.
+          {t('loadingFailed')}
         </p>
         <button
           onClick={retry}
           className="px-4 py-2 bg-blue-100 text-[#191A1C] rounded-lg"
         >
-          다시 시도
+          {t('retry')}
         </button>
       </div>
     );
@@ -110,17 +149,15 @@ export default function HelperPage() {
   if (showIntro) {
     return (
       <div className="flex flex-col items-center justify-center h-[calc(100vh-4rem)] p-6 bg-background">
-        <h1 className="text-h1 mb-4 text-center">계절 질환 자가진단 도우미</h1>
-        <p className="text-body text-foreground/60 text-center mb-8">
-          간단한 질문에 답하시면
-          <br />
-          AI가 증상을 분석해드립니다
+        <h1 className="text-h1 mb-4 text-center">{t('seasonalIllnessChecker')}</h1>
+        <p className="text-body text-foreground/60 text-center mb-8 whitespace-pre-line">
+          {t('seasonalIntroDescription')}
         </p>
         <button
           onClick={handleStart}
           className="px-10 py-8 bg-blue-100 text-[#191A1C] rounded-3xl text-button hover:bg-blue-200 active:bg-blue-300"
         >
-          자가진단 시작하기
+          {t('startSymptomCheck')}
         </button>
       </div>
     );
@@ -130,20 +167,16 @@ export default function HelperPage() {
     return (
       <div className="flex flex-col items-center justify-center h-[calc(100vh-4rem)] p-6 bg-background">
         <button
-          onClick={handleSelect}
+          onClick={handleSelectWithTTS}
           className="mb-10 px-14 py-5 bg-blue-100 text-[#191A1C] rounded-3xl text-button hover:bg-blue-200 active:bg-blue-300"
         >
-          음성 안내와
-          <br />
-          자가진단 하기
+          <span className="whitespace-pre-line">{t('voiceGuidanceCheck')}</span>
         </button>
         <button
-          onClick={handleSelect}
+          onClick={handleSelectWithoutTTS}
           className="px-14 py-5 bg-blue-100 text-[#191A1C] rounded-3xl text-button hover:bg-blue-200 active:bg-blue-300"
         >
-          문진표를 보고
-          <br />
-          자가진단 하기
+          <span className="whitespace-pre-line">{t('questionnaireCheck')}</span>
         </button>
       </div>
     );
@@ -163,14 +196,14 @@ export default function HelperPage() {
               disabled={isSubmitting}
               className="w-20 h-20 bg-blue-100 text-[#191A1C] rounded-3xl text-button hover:bg-blue-200 active:bg-blue-300 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              예
+              {t('yes')}
             </button>
             <button
               onClick={() => handleAnswer(currentQuestion.questionCode, false)}
               disabled={isSubmitting}
               className="w-20 h-20 bg-blue-100 text-[#191A1C] rounded-3xl text-button hover:bg-blue-200 active:bg-blue-300 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              아니오
+              {t('no')}
             </button>
           </div>
         </div>
@@ -180,8 +213,8 @@ export default function HelperPage() {
       {isSubmitting && (
         <div className="absolute inset-0 bg-background/80 flex items-center justify-center">
           <div className="bg-white rounded-xl p-6 shadow-lg text-center">
-            <div className="text-h2 mb-2">분석 중...</div>
-            <div className="text-body text-foreground/60">잠시만 기다려주세요</div>
+            <div className="text-h2 mb-2">{t('analyzing')}</div>
+            <div className="text-body text-foreground/60">{t('pleaseWait')}</div>
           </div>
         </div>
       )}

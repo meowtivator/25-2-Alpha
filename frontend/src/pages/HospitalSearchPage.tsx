@@ -1,5 +1,5 @@
 // src/pages/HospitalSearchPage.tsx
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, X } from 'lucide-react';
 import { SearchBar } from '@/components/ui/SearchBar';
@@ -14,9 +14,43 @@ export default function HospitalSearchPage() {
   const [searchResults, setSearchResults] = useState<HospitalSearchItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [userLocation, setUserLocation] = useState<{ lat: number; lon: number } | null>(null);
+
+  // 사용자 현재 위치 가져오기
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          setUserLocation({ lat: latitude, lon: longitude });
+          console.log('📍 사용자 현재 위치:', { lat: latitude, lon: longitude });
+        },
+        (error) => {
+          console.error('❌ 위치 정보를 가져올 수 없습니다:', error);
+        }
+      );
+    }
+  }, []);
+
+  // 두 지점 간의 거리 계산 (Haversine formula)
+  const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
+    const R = 6371e3; // 지구 반지름 (미터)
+    const φ1 = (lat1 * Math.PI) / 180;
+    const φ2 = (lat2 * Math.PI) / 180;
+    const Δφ = ((lat2 - lat1) * Math.PI) / 180;
+    const Δλ = ((lon2 - lon1) * Math.PI) / 180;
+
+    const a =
+      Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+      Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+    return Math.round(R * c); // 미터 단위로 반환
+  };
 
   const handleBack = () => {
-    navigate(-1);
+    // 증상 결과 페이지로 이동 (DiagnosisResultPage)
+    navigate(ROUTES.DIAGNOSIS_RESULT);
   };
 
   const handleSearch = async (value: string) => {
@@ -40,7 +74,21 @@ export default function HospitalSearchPage() {
   };
 
   const handleNavigate = (hospital: HospitalSearchItem) => {
-    // TODO: 병원 위치로 지도 이동
+    // 디버깅: 선택된 병원 정보 출력
+    console.group('🏥 선택된 병원 정보');
+    console.log('병원 ID:', hospital.id);
+    console.log('병원 이름:', hospital.name);
+    console.log('위치 (위도):', hospital.lat);
+    console.log('위치 (경도):', hospital.lon);
+    console.log('도로명 주소:', hospital.addrRoad);
+    console.log('지번 주소:', hospital.addrJibun);
+    console.log('짧은 주소:', hospital.shortAddress);
+    console.log('응급실 여부:', hospital.hasEmergencyRoom);
+    console.log('거리 (미터):', hospital.distanceM);
+    console.log('전체 객체:', hospital);
+    console.groupEnd();
+
+    // 병원 위치로 지도 이동
     navigate(ROUTES.HOSPITAL_MAP, {
       state: {
         selectedHospital: hospital,
@@ -113,9 +161,14 @@ export default function HospitalSearchPage() {
                           <p className="text-body-small text-foreground/70">
                             {hospital.shortAddress}
                           </p>
-                          {hospital.distanceM !== undefined && (
+                          {userLocation && (
                             <p className="text-body-small text-blue-600 font-semibold">
-                              약 {hospital.distanceM}m
+                              약 {calculateDistance(
+                                userLocation.lat,
+                                userLocation.lon,
+                                hospital.lat,
+                                hospital.lon
+                              )}m
                             </p>
                           )}
                         </div>

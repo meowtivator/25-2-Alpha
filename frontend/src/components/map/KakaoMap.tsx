@@ -1,6 +1,7 @@
 // src/components/map/KakaoMap.tsx
 import { Map, MapMarker, CustomOverlayMap } from 'react-kakao-maps-sdk';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { MarkerIcon } from '@/assets/icons';
 
 interface KakaoMapProps {
@@ -24,6 +25,9 @@ export function KakaoMap({
     lat: latitude,
     lng: longitude,
   });
+  const { t } = useTranslation();
+  const mapLabel = t('mapArea');
+  const markerLabel = t('shelterMarker');
 
   // props가 변경되면 지도 중심을 업데이트
   useEffect(() => {
@@ -34,28 +38,30 @@ export function KakaoMap({
   }, [latitude, longitude]);
 
   return (
-    <Map
-      center={center}
-      style={{
-        width,
-        height,
-        borderRadius: '0px',
-      }}
-      level={level}
-    >
+    <div role="region" aria-label={mapLabel}>
+      <Map
+        center={center}
+        style={{
+          width,
+          height,
+          borderRadius: '0px',
+        }}
+        level={level}
+      >
       {useCustomMarker ? (
         // 커스텀 마커 (SVG 아이콘 사용)
         <CustomOverlayMap position={center} yAnchor={1}>
-          <div className="flex flex-col items-center">
+          <div className="flex flex-col items-center" role="img" aria-label={markerLabel}>
             {/* 커스텀 마커 아이콘 */}
             <MarkerIcon className="text-blue-900" size={25} />
           </div>
         </CustomOverlayMap>
       ) : (
         // 기본 카카오맵 마커
-        <MapMarker position={center}>
+        <MapMarker position={center} title={markerLabel}>
         </MapMarker>
       )}
-    </Map>
+      </Map>
+    </div>
   );
 }

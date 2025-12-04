@@ -1,13 +1,18 @@
 // src/pages/SettingsPage.tsx
+import { useState } from 'react';
 import { ChevronLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useSettingsStore } from '@/stores/settingsStore';
 import { ToggleButtons } from '@/components/ui/ToggleButtons';
 import { Switch } from '@/components/ui/Switch';
 import { ListItem } from '@/components/ui/ListItem';
+import { LANGUAGE_NAMES, type Language } from '@/lib/i18n';
 
 export default function SettingsPage() {
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
+  const [showLanguageDropdown, setShowLanguageDropdown] = useState(false);
 
   const {
     textSize,
@@ -16,10 +21,18 @@ export default function SettingsPage() {
     setShowSeniorFacilities,
     showColdShelters,
     setShowColdShelters,
-    language,
     autoLocateOnLaunch,
     setAutoLocateOnLaunch,
+    setLanguage,
   } = useSettingsStore();
+
+  const currentLanguage = i18n.language as Language;
+
+  const handleLanguageChange = (lang: Language) => {
+    i18n.changeLanguage(lang);
+    setLanguage(lang);
+    setShowLanguageDropdown(false);
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -33,7 +46,7 @@ export default function SettingsPage() {
           >
             <ChevronLeft className="w-12 h-12 text-blue-100" />
           </button>
-          <h1 className="flex-1 text-center text-h2">설정</h1>
+          <h1 className="flex-1 text-center text-h2">{t('settings')}</h1>
           <div className="w-10" /> {/* 중앙 정렬을 위한 스페이서 */}
         </div>
       </header>
@@ -42,16 +55,16 @@ export default function SettingsPage() {
         {/* 지도설정 섹션 */}
         <section>
           <h2 className="px-5 py-3 text-caption text-foreground/50 bg-background">
-            지도설정
+            {t('mapSettings')}
           </h2>
           <div className="bg-background divide-y divide-foreground/5">
             {/* 글자 크기 */}
-            <div className="flex pl-5 pr-4 py-2 items-center justify-between bg-blue-50">
-              <span className="text-foreground text-body">글자 크기</span>
+            <div className="flex w-auto pl-5 pr-4 py-2 items-center justify-between bg-blue-50 whitespace-nowrap">
+              <span className="text-foreground text-body">{t('textSize')}</span>
               <ToggleButtons
                 options={[
-                  { value: 'default', label: '기본' },
-                  { value: 'large', label: '크게' },
+                  { value: 'default', label: t('default') },
+                  { value: 'large', label: t('large') },
                 ]}
                 value={textSize}
                 onChange={(value) => setTextSize(value as 'default' | 'large')}
@@ -59,7 +72,7 @@ export default function SettingsPage() {
             </div>
             {/* 특정인 이용 시설 표시 */}
             <ListItem
-              label="특정인 이용 시설 표시"
+              label={t('showSpecificFacilities')}
               onClick={() => setShowSeniorFacilities(!showSeniorFacilities)}
               rightContent={
                 <Switch
@@ -71,7 +84,7 @@ export default function SettingsPage() {
 
             {/* 한파쉼터 전환 */}
             <ListItem
-              label="한파쉼터 전환"
+              label={t('switchToColdShelter')}
               onClick={() => setShowColdShelters(!showColdShelters)}
               rightContent={
                 <Switch
@@ -80,29 +93,48 @@ export default function SettingsPage() {
                 />
               }
             />
+
           </div>
         </section>
 
         {/* 앱설정 섹션 */}
         <section>
           <h2 className="px-5 py-3 text-caption text-foreground/50 bg-background">
-            앱설정
+            {t('appSettings')}
           </h2>
           <div className="bg-background divide-y divide-foreground/5">
             {/* 언어 */}
-            <ListItem
-              label="언어"
-              value={language}
-              showArrow
-              onClick={() => {
-                // TODO: 언어 선택 모달 또는 페이지로 이동
-                console.log('언어 설정 페이지로 이동');
-              }}
-            />
+            <div className="relative">
+              <ListItem
+                label={t('language')}
+                value={LANGUAGE_NAMES[currentLanguage]}
+                showArrow
+                onClick={() => setShowLanguageDropdown(!showLanguageDropdown)}
+              />
+
+              {/* 언어 선택 드롭다운 */}
+              {showLanguageDropdown && (
+                <div className="absolute left-0 right-0 top-full bg-white border border-foreground/10 shadow-lg z-50 rounded-lg overflow-hidden">
+                  {(Object.entries(LANGUAGE_NAMES) as [Language, string][]).map(([lang, name]) => (
+                    <button
+                      key={lang}
+                      onClick={() => handleLanguageChange(lang)}
+                      className={`w-full px-5 py-3 text-left text-body transition-colors ${
+                        currentLanguage === lang
+                          ? 'bg-blue-100 text-blue-900 font-semibold'
+                          : 'bg-blue-50 text-foreground hover:bg-blue-100'
+                      }`}
+                    >
+                      {name}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
 
             {/* 앱 실행 시 현위치 탐색 */}
             <ListItem
-              label="앱 실행 시 현위치 탐색"
+              label={t('detectLocationOnLaunch')}
               onClick={() => setAutoLocateOnLaunch(!autoLocateOnLaunch)}
               rightContent={
                 <Switch
@@ -117,12 +149,12 @@ export default function SettingsPage() {
         {/* 약관 및 정책 섹션 */}
         <section>
           <h2 className="px-5 py-3 text-caption text-foreground/50 bg-background">
-            약관 및 정책
+            {t('termsAndPolicies')}
           </h2>
           <div className="bg-background divide-y divide-foreground/5">
             {/* 위치기반서비스 이용약관 */}
             <ListItem
-              label="위치기반서비스 이용약관"
+              label={t('locationServiceTerms')}
               showArrow
               onClick={() => {
                 // TODO: 약관 페이지로 이동
@@ -132,7 +164,7 @@ export default function SettingsPage() {
 
             {/* 서비스 이용약관 */}
             <ListItem
-              label="서비스 이용약관"
+              label={t('serviceTerms')}
               showArrow
               onClick={() => navigate('/terms/service')}
             />
