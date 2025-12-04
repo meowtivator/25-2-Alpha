@@ -1,16 +1,19 @@
 // src/pages/HospitalMapPage.tsx
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Search, ChevronLeft } from 'lucide-react';
-import { KakaoMap } from '@/components/map/KakaoMap';
+import { Map, CustomOverlayMap } from 'react-kakao-maps-sdk';
 import { SearchBar } from '@/components/ui/SearchBar';
 import { fetchNearbyHospitals } from '@/api/hospitalApi';
-import type { HospitalGroup } from '@/types/hospital';
+import type { HospitalGroup, HospitalSearchItem } from '@/types/hospital';
 import { HospitalIcon, EmergencyHospitalIcon } from '@/assets/icons';
 import { ROUTES } from '@/lib/constants/routes';
+import { useSettingsStore } from '@/stores/settingsStore';
 
 export default function HospitalMapPage() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { autoLocateOnLaunch } = useSettingsStore();
 
   // 지도 중심 좌표 state
   const [mapCenter, setMapCenter] = useState({
@@ -21,32 +24,132 @@ export default function HospitalMapPage() {
   const [hospitalGroups, setHospitalGroups] = useState<HospitalGroup[]>([]);
   const [selectedGroup, setSelectedGroup] = useState<HospitalGroup | null>(null);
   const [loading, setLoading] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(false);
+  const [, setUserLocation] = useState<{ lat: number; lon: number } | null>(null);
+  const [selectedHospital, setSelectedHospital] = useState<HospitalSearchItem | null>(null);
 
-  // 현재 위치 가져오기 및 근처 병원 조회
+  // 페이지 초기화 - 검색에서 선택한 병원 또는 현재 위치
   useEffect(() => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        async (position) => {
-          const { latitude, longitude } = position.coords;
-          setMapCenter({ latitude, longitude });
+    if (isInitialized) return; // 이미 초기화되었으면 실행하지 않음
 
-          // 근처 병원 조회
+    const state = location.state as { selectedHospital?: HospitalSearchItem };
+
+    const initializeMap = async () => {
+      if (state?.selectedHospital) {
+        // 디버깅: HospitalSearchPage에서 전달받은 병원 정보
+        console.group('📍 HospitalMapPage - 전달받은 병원 정보');
+        console.log('병원 이름:', state.selectedHospital.name);
+        console.log('위도:', state.selectedHospital.lat);
+        console.log('경도:', state.selectedHospital.lon);
+        console.log('전체 객체:', state.selectedHospital);
+        console.groupEnd();
+
+        const hospital = state.selectedHospital;
+
+        // 선택된 병원 좌표로 지도 중심 설정
+        setMapCenter({
+          latitude: hospital.lat,
+          longitude: hospital.lon,
+        });
+
+        // 선택된 병원 마커 표시를 위해 state 설정
+        setSelectedHospital(hospital);
+
+        console.log('🗺️ 지도 중심 설정:', { lat: hospital.lat, lon: hospital.lon });
+
+        // 사용자 현재 위치 가져오기 (거리 계산용)
+        // autoLocateOnLaunch가 켜져있을 때만 위치 탐색
+        if (autoLocateOnLaunch && navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(
+            async (position) => {
+              const { latitude, longitude } = position.coords;
+              setUserLocation({ lat: latitude, lon: longitude });
+              console.log('✅ 사용자 현재 위치 (거리 계산용):', { lat: latitude, lon: longitude });
+
+              // 사용자 위치 기준으로 근처 병원 조회
+              try {
+                setLoading(true);
+                console.log('🔍 사용자 위치 기준 근처 병원 조회 시작...');
+                const groups = await fetchNearbyHospitals(latitude, longitude, 2000);
+                console.log('✅ 조회된 병원 그룹:', groups.length, '개');
+                setHospitalGroups(groups);
+              } catch (error) {
+                console.error('❌ 근처 병원 조회 실패:', error);
+              } finally {
+                setLoading(false);
+              }
+            },
+            async (error) => {
+              console.error('❌ 위치 정보를 가져올 수 없습니다. 선택한 병원 좌표 사용:', error);
+              // 위치 정보를 가져올 수 없으면 선택한 병원 좌표 사용
+              try {
+                setLoading(true);
+                console.log('🔍 선택한 병원 좌표 기준 근처 병원 조회...');
+                const groups = await fetchNearbyHospitals(hospital.lat, hospital.lon, 2000);
+                console.log('✅ 조회된 병원 그룹:', groups.length, '개');
+                setHospitalGroups(groups);
+              } catch (err) {
+                console.error('❌ 근처 병원 조회 실패:', err);
+              } finally {
+                setLoading(false);
+              }
+            }
+          );
+        } else if (!autoLocateOnLaunch) {
+          // 자동 위치 탐색이 꺼져있으면 선택한 병원 좌표 기준으로 조회
+          console.log('📍 자동 위치 탐색이 비활성화되어 선택한 병원 좌표 사용');
           try {
             setLoading(true);
-            const groups = await fetchNearbyHospitals(latitude, longitude, 2000);
+            const groups = await fetchNearbyHospitals(hospital.lat, hospital.lon, 2000);
+            console.log('✅ 조회된 병원 그룹:', groups.length, '개');
             setHospitalGroups(groups);
-          } catch (error) {
-            console.error('근처 병원 조회 실패:', error);
+          } catch (err) {
+            console.error('❌ 근처 병원 조회 실패:', err);
           } finally {
             setLoading(false);
           }
-        },
-        (error) => {
-          console.error('위치 정보를 가져올 수 없습니다:', error);
         }
-      );
-    }
-  }, []);
+
+        // state 초기화 (뒤로가기 시 다시 표시 방지)
+        navigate(location.pathname, { replace: true, state: {} });
+      } else if (autoLocateOnLaunch && navigator.geolocation) {
+        // 검색에서 선택한 병원이 없고 자동 위치 탐색이 켜져있으면 현재 위치 사용
+        console.log('📍 현재 위치 가져오기 시작...');
+        navigator.geolocation.getCurrentPosition(
+          async (position) => {
+            const { latitude, longitude } = position.coords;
+            console.log('✅ 현재 위치:', { latitude, longitude });
+
+            setMapCenter({ latitude, longitude });
+            setUserLocation({ lat: latitude, lon: longitude });
+
+            // 근처 병원 조회
+            try {
+              setLoading(true);
+              console.log('🔍 현재 위치 근처 병원 조회 시작...');
+              const groups = await fetchNearbyHospitals(latitude, longitude, 2000);
+              console.log('✅ 조회된 병원 그룹:', groups.length, '개');
+              setHospitalGroups(groups);
+            } catch (error) {
+              console.error('❌ 근처 병원 조회 실패:', error);
+            } finally {
+              setLoading(false);
+            }
+          },
+          (error) => {
+            console.error('❌ 위치 정보를 가져올 수 없습니다:', error);
+          }
+        );
+      } else {
+        // 자동 위치 탐색이 꺼져있으면 기본 좌표 유지
+        console.log('📍 자동 위치 탐색이 비활성화되어 기본 좌표 사용');
+      }
+
+      setIsInitialized(true);
+    };
+
+    initializeMap();
+  }, [location.state, navigate, location.pathname, isInitialized, autoLocateOnLaunch]);
 
   const handleBack = () => {
     navigate(-1);
@@ -78,14 +181,76 @@ export default function HospitalMapPage() {
 
       {/* 지도 */}
       <div className="absolute top-[60px] left-0 right-0 bottom-0">
-        <KakaoMap
-          width="100%"
-          height="100%"
-          latitude={mapCenter.latitude}
-          longitude={mapCenter.longitude}
-          level={3}
-          useCustomMarker={true}
-        />
+        <Map
+          center={{ lat: mapCenter.latitude, lng: mapCenter.longitude }}
+          style={{ width: '100%', height: '100%' }}
+          level={4}
+        >
+          {/* 병원 그룹 마커들 */}
+          {hospitalGroups.map((group, index) => {
+            // 그룹 내 응급실 병원이 있는지 확인
+            const hasEmergency = group.hospitals.some(h => h.hasEmergencyRoom);
+
+            return (
+              <CustomOverlayMap
+                key={`${group.lat}-${group.lon}-${index}`}
+                position={{ lat: group.lat, lng: group.lon }}
+                yAnchor={1}
+              >
+                <div
+                  onClick={() => handleMarkerClick(group)}
+                  className="cursor-pointer transform hover:scale-110 transition-transform"
+                >
+                  {hasEmergency ? (
+                    <EmergencyHospitalIcon size={35} />
+                  ) : (
+                    <HospitalIcon size={35} />
+                  )}
+                </div>
+              </CustomOverlayMap>
+            );
+          })}
+
+          {/* 검색에서 선택된 병원 마커 (더 크고 눈에 띄게) */}
+          {selectedHospital && (
+            <CustomOverlayMap
+              position={{ lat: selectedHospital.lat, lng: selectedHospital.lon }}
+              yAnchor={1}
+            >
+              <div
+                onClick={() => {
+                  // 선택된 병원의 그룹을 생성하여 모달 표시
+                  const hospitalGroup: HospitalGroup = {
+                    lat: selectedHospital.lat,
+                    lon: selectedHospital.lon,
+                    addrRoad: selectedHospital.shortAddress,
+                    addrJibun: '',
+                    hospitals: [
+                      {
+                        id: selectedHospital.id,
+                        name: selectedHospital.name,
+                        addrRoad: selectedHospital.shortAddress,
+                        addrJibun: '',
+                        lat: selectedHospital.lat,
+                        lon: selectedHospital.lon,
+                        hasEmergencyRoom: selectedHospital.hasEmergencyRoom,
+                        distanceM: selectedHospital.distanceM,
+                      },
+                    ],
+                  };
+                  handleMarkerClick(hospitalGroup);
+                }}
+                className="cursor-pointer transform hover:scale-110 transition-transform"
+              >
+                {selectedHospital.hasEmergencyRoom ? (
+                  <EmergencyHospitalIcon size={50} />
+                ) : (
+                  <HospitalIcon size={50} />
+                )}
+              </div>
+            </CustomOverlayMap>
+          )}
+        </Map>
       </div>
 
       {/* 검색바 오버레이 */}

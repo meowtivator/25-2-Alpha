@@ -199,3 +199,39 @@ export function EmergencyHospitalIcon({ className, size }: IconProps) {
     </svg>
   );
 }
+
+/**
+ * 현재 위치 마커 아이콘 (사용자 위치)
+ * 색상: #4285F4 (구글 블루)
+ */
+export function CurrentLocationIcon({ className, size }: IconProps) {
+  const dimension = size || 24;
+
+  return (
+    <svg
+      width={dimension}
+      height={dimension}
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+    >
+      {/* 외부 원 (테두리) */}
+      <circle
+        cx="12"
+        cy="12"
+        r="10"
+        fill="#FFFFFF"
+        stroke="#4285F4"
+        strokeWidth="3"
+      />
+      {/* 내부 원 (중심점) */}
+      <circle
+        cx="12"
+        cy="12"
+        r="6"
+        fill="#4285F4"
+      />
+    </svg>
+  );
+}

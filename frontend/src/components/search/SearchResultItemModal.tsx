@@ -1,6 +1,7 @@
 // src/components/search/SearchResultItemModal.tsx
 import { useState } from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface SearchResultItemModalProps {
   name: string;
@@ -20,6 +21,7 @@ export function SearchResultItemModal({
   onNavigate,
 }: SearchResultItemModalProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { t } = useTranslation();
 
   const closeModal = () => setIsModalOpen(false);
 
@@ -51,7 +53,7 @@ export function SearchResultItemModal({
             onClick={onNavigate}
             className="px-6 py-2 bg-blue-100 border-2 border-blue-300 hover:bg-blue-200 active:bg-blue-300 text-foreground rounded-full text-caption font-medium transition-colors flex-shrink-0"
           >
-            길찾기
+            {t('directions')}
           </button>
         </div>
       </div>
@@ -76,7 +78,7 @@ export function SearchResultItemModal({
                 {detailAddress && (
                   <div className="flex items-start gap-2">
                     <span className="text-body-small font-semibold text-foreground min-w-[50px]">
-                      도로명
+                      {t('streetAddress')}
                     </span>
                     <span className="text-body-small text-foreground">
                       {detailAddress}
@@ -86,7 +88,7 @@ export function SearchResultItemModal({
                 {address && (
                   <div className="flex items-start gap-2">
                     <span className="text-body-small font-semibold text-foreground min-w-[50px]">
-                      지번
+                      {t('lotAddress')}
                     </span>
                     <span className="text-body-small text-foreground">{address}</span>
                   </div>

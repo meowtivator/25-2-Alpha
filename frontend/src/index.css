@@ -44,6 +44,39 @@
   --color-red-900: #6b2c21;
 }
 
+body.theme-red {
+  --color-blue-50: var(--color-red-50);
+  --color-blue-100: var(--color-red-100);
+  --color-blue-200: var(--color-red-200);
+  --color-blue-300: var(--color-red-300);
+  --color-blue-400: var(--color-red-400);
+  --color-blue-500: var(--color-red-500);
+  --color-blue-600: var(--color-red-600);
+  --color-blue-700: var(--color-red-700);
+  --color-blue-800: var(--color-red-800);
+  --color-blue-900: var(--color-red-900);
+}
+
+body.theme-red .bg-blue-50 { background-color: var(--color-red-50) !important; }
+body.theme-red .bg-blue-100 { background-color: var(--color-red-100) !important; }
+body.theme-red .bg-blue-200 { background-color: var(--color-red-200) !important; }
+body.theme-red .bg-blue-300 { background-color: var(--color-red-300) !important; }
+body.theme-red .bg-blue-900 { background-color: var(--color-red-900) !important; }
+
+body.theme-red .text-blue-100 { color: var(--color-red-100) !important; }
+body.theme-red .text-blue-200 { color: var(--color-red-200) !important; }
+body.theme-red .text-blue-500 { color: var(--color-red-500) !important; }
+body.theme-red .text-blue-600 { color: var(--color-red-600) !important; }
+body.theme-red .text-blue-900 { color: var(--color-red-900) !important; }
+
+body.theme-red .border-blue-100 { border-color: var(--color-red-100) !important; }
+body.theme-red .border-blue-200 { border-color: var(--color-red-200) !important; }
+body.theme-red .border-blue-300 { border-color: var(--color-red-300) !important; }
+
+body.theme-red .hover\:text-blue-500:hover { color: var(--color-red-500) !important; }
+body.theme-red .hover\:bg-blue-200:hover { background-color: var(--color-red-200) !important; }
+body.theme-red .active\:bg-blue-300:active { background-color: var(--color-red-300) !important; }
+
 /* ========================================
    📱 일반 사용자 타이포그래피 (기본값)
    핑크 메모지 기준

@@ -1,5 +1,6 @@
 // src/components/map/ShelterInfoModal.tsx
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { ShelterDetail } from '@/types/shelter';
 
 interface ShelterInfoModalProps {
@@ -8,6 +9,7 @@ interface ShelterInfoModalProps {
 }
 
 export function ShelterInfoModal({ shelter, onClose }: ShelterInfoModalProps) {
+  const { t } = useTranslation();
   // 스냅 단계 상태
   const [isExpanded, setIsExpanded] = useState(false);
   // 드래그 진행 중 오프셋(px). 0은 스냅 포인트.
@@ -37,17 +39,17 @@ export function ShelterInfoModal({ shelter, onClose }: ShelterInfoModalProps) {
   };
 
   // 드래그 중 내부 로직 (document 리스너에서 호출)
-  const handleDragMoveInternal = (clientY: number) => {
+  const handleDragMoveInternal = useCallback((clientY: number) => {
     const deltaY = clientY - dragStartYRef.current;
 
     // 위로 드래그: 음수 값 (최대 -240px로 제한)
     // 아래로 드래그: 양수 값 (최대 240px)
     const clamped = Math.max(-240, Math.min(240, deltaY));
     setCurrentY(clamped);
-  };
+  }, []);
 
   // 드래그 종료 내부 로직 (document 리스너에서 호출)
-  const handleDragEndInternal = () => {
+  const handleDragEndInternal = useCallback(() => {
     const y = currentYRef.current;
     const expanded = isExpandedRef.current;
 
@@ -66,7 +68,7 @@ export function ShelterInfoModal({ shelter, onClose }: ShelterInfoModalProps) {
 
     setIsDragging(false);
     setCurrentY(0); // 스냅 포인트 복귀
-  };
+  }, [onClose]);
 
   // 핸들 영역 포인터 시작
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -98,18 +100,20 @@ export function ShelterInfoModal({ shelter, onClose }: ShelterInfoModalProps) {
       handleDragEndInternal();
     };
 
+    const passiveFalseOption: AddEventListenerOptions = { passive: false };
+
     document.addEventListener('mousemove', onMouseMove);
     document.addEventListener('mouseup', onMouseUp);
-    document.addEventListener('touchmove', onTouchMove, { passive: false });
+    document.addEventListener('touchmove', onTouchMove, passiveFalseOption);
     document.addEventListener('touchend', onTouchEnd);
 
     return () => {
       document.removeEventListener('mousemove', onMouseMove);
       document.removeEventListener('mouseup', onMouseUp);
-      document.removeEventListener('touchmove', onTouchMove as any);
+      document.removeEventListener('touchmove', onTouchMove, passiveFalseOption);
       document.removeEventListener('touchend', onTouchEnd);
     };
-  }, [isDragging]);
+  }, [isDragging, handleDragEndInternal, handleDragMoveInternal]);
 
   // 모달 높이 계산
   const getModalHeight = () => {
@@ -168,10 +172,10 @@ export function ShelterInfoModal({ shelter, onClose }: ShelterInfoModalProps) {
           {/* 버튼 그룹 */}
           <div className="flex gap-2 mb-6">
             <button className="flex-1 py-3 bg-blue-100 text-blue-900 rounded-full text-body-small font-semibold border-2 border-blue-300 hover:bg-blue-200 active:bg-blue-300 transition-colors">
-              출발
+              {t('departure')}
             </button>
             <button className="flex-1 py-3 bg-blue-100 text-blue-900 rounded-full text-body-small font-semibold border-2 border-blue-300 hover:bg-blue-200 active:bg-blue-300 transition-colors">
-              도착
+              {t('arrival')}
             </button>
           </div>
 
@@ -180,7 +184,7 @@ export function ShelterInfoModal({ shelter, onClose }: ShelterInfoModalProps) {
             {/* 도로명 - 항상 표시 */}
             <div className="flex items-start gap-3">
               <span className="text-body font-semibold text-foreground min-w-[80px]">
-                도로명
+                {t('streetAddress')}
               </span>
               <span className="text-body text-foreground">
                 {shelter.addrRoad || '-'}
@@ -190,7 +194,7 @@ export function ShelterInfoModal({ shelter, onClose }: ShelterInfoModalProps) {
             {/* 지번 - 항상 표시 */}
             <div className="flex items-start gap-3">
               <span className="text-body font-semibold text-foreground min-w-[80px]">
-                지번
+                {t('lotAddress')}
               </span>
               <span className="text-body text-foreground">
                 {shelter.addrJibun || '-'}

@@ -30,6 +30,7 @@ const queryClient = new QueryClient({
 
 function App() {
   const typographyMode = useSettingsStore((state) => state.typographyMode);
+  const showColdShelters = useSettingsStore((state) => state.showColdShelters);
 
   // 카카오맵 API 로드
   const [loading, error] = useKakaoLoader({
@@ -42,6 +43,10 @@ function App() {
     document.body.classList.remove('typography-default', 'typography-senior');
     document.body.classList.add(`typography-${typographyMode}`);
   }, [typographyMode]);
+
+  useEffect(() => {
+    document.body.classList.toggle('theme-red', showColdShelters);
+  }, [showColdShelters]);
 
   // 카카오맵 로딩 중
   if (loading) {
