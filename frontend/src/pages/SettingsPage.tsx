@@ -51,7 +51,7 @@ export default function SettingsPage() {
         </div>
       </header>
 
-      <div className="space-y-2">
+      <div className="space-y-2 whitespace-pre-wrap text-left">
         {/* 지도설정 섹션 */}
         <section>
           <h2 className="px-5 py-3 text-caption text-foreground/50 bg-background">
