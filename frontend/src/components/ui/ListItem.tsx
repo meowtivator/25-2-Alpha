@@ -24,7 +24,7 @@ export function ListItem({
       onClick={onClick}
       disabled={!isClickable}
       className={`
-        w-full flex items-center justify-between px-5 py-4 bg-blue-50
+        w-full flex text-left items-center justify-between px-5 py-4 bg-blue-50
         ${isClickable ? 'cursor-pointer active:opacity-70' : 'cursor-default'}
       `}
     >

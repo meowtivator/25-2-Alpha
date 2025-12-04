@@ -145,7 +145,7 @@ export default function HomePage() {
       </div>
 
       {/* 검색바 오버레이 - 클릭하면 검색 페이지로 이동 */}
-      <div className="absolute top-0 left-0 right-0 z-10">
+      <div className="absolute top-0 left-0 right-0 z-20">
         <SearchBar
           value=""
           onChange={() => {}} // 읽기 전용이므로 빈 함수
