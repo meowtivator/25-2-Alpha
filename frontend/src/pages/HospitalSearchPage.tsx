@@ -80,8 +80,6 @@ export default function HospitalSearchPage() {
     console.log('병원 이름:', hospital.name);
     console.log('위치 (위도):', hospital.lat);
     console.log('위치 (경도):', hospital.lon);
-    console.log('도로명 주소:', hospital.addrRoad);
-    console.log('지번 주소:', hospital.addrJibun);
     console.log('짧은 주소:', hospital.shortAddress);
     console.log('응급실 여부:', hospital.hasEmergencyRoom);
     console.log('거리 (미터):', hospital.distanceM);

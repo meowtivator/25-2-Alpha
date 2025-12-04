@@ -223,14 +223,16 @@ export default function HospitalMapPage() {
                   const hospitalGroup: HospitalGroup = {
                     lat: selectedHospital.lat,
                     lon: selectedHospital.lon,
-                    addrRoad: selectedHospital.addrRoad,
-                    addrJibun: selectedHospital.addrJibun,
+                    addrRoad: selectedHospital.shortAddress,
+                    addrJibun: '',
                     hospitals: [
                       {
                         id: selectedHospital.id,
                         name: selectedHospital.name,
-                        addrRoad: selectedHospital.addrRoad,
-                        addrJibun: selectedHospital.addrJibun,
+                        addrRoad: selectedHospital.shortAddress,
+                        addrJibun: '',
+                        lat: selectedHospital.lat,
+                        lon: selectedHospital.lon,
                         hasEmergencyRoom: selectedHospital.hasEmergencyRoom,
                         distanceM: selectedHospital.distanceM,
                       },
