@@ -33,7 +33,7 @@ export function BottomTabBar() {
   const shouldHideIcon = textSize === 'large' && (i18n.language === 'vi' || i18n.language === 'en');
 
   return (
-    <nav className="bg-blue-50 border-t border-blue-100 shadow-lg relative z-50">
+    <nav className="bg-blue-50 border-t border-blue-100 shadow-[0_-4px_12px_rgba(0,0,0,0.1)]">
       <div className="flex items-center justify-around h-16 max-w-md mx-auto">
         {tabs.map(({ labelKey, href, icon: Icon }) => {
           const isActive = pathname === href;
@@ -54,7 +54,9 @@ export function BottomTabBar() {
                 }
               `}
             >
-              {showIcon && <Icon className="w-6 h-6 mb-1" />}
+              <div className="w-6 h-6 mb-1 flex items-center justify-center">
+                {showIcon && <Icon className="w-6 h-6" />}
+              </div>
               <span className="text-caption text-center whitespace-pre-line wrap-break-word">{t(labelKey)}</span>
             </Link>
           );

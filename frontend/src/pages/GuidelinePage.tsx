@@ -1,6 +1,7 @@
 // src/pages/GuidelinePage.tsx
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   fetchSymptomGuides,
   fetchDiagnosisDetail,
@@ -16,6 +17,7 @@ import { ROUTES } from '@/lib/constants/routes';
 export default function GuidelinePage() {
   const location = useLocation();
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
   const { suspected, assessmentId } = location.state as {
     suspected: boolean;
     assessmentId: number;
@@ -49,32 +51,32 @@ export default function GuidelinePage() {
         }
       } catch (err) {
         console.error('가이드 정보 조회 실패:', err);
-        setError('가이드 정보를 불러오는데 실패했습니다.');
+        setError(t('loadGuidesFailed'));
       } finally {
         setLoading(false);
       }
     };
 
     fetchData();
-  }, [suspected, assessmentId]);
+  }, [suspected, assessmentId, i18n.language, t]);
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-[calc(100vh-4rem)]">
-        <p className="text-body text-foreground">정보를 불러오는 중...</p>
+      <div className="flex items-center justify-center h-[calc(100vh-4rem-env(safe-area-inset-bottom))]">
+        <p className="text-body text-foreground">{t('loadingInfo')}</p>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="flex flex-col items-center justify-center h-[calc(100vh-4rem)] gap-4">
+      <div className="flex flex-col items-center justify-center h-[calc(100vh-4rem-env(safe-area-inset-bottom))] gap-4">
         <p className="text-body text-red-600">{error}</p>
         <button
           onClick={() => navigate(ROUTES.HELPER)}
           className="px-4 py-2 bg-blue-100 text-[#191A1C] rounded-lg"
         >
-          처음으로 돌아가기
+          {t('backToStart')}
         </button>
       </div>
     );
@@ -83,8 +85,8 @@ export default function GuidelinePage() {
   // suspected = false: 전체 가이드 표시
   if (!suspected) {
     return (
-      <div className="min-h-[calc(100vh-4rem)] p-6 bg-background">
-        <h1 className="text-h1 text-center mb-6">온열질환 종류 및 대응법</h1>
+      <div className="min-h-[calc(100vh-4rem-env(safe-area-inset-bottom))] p-6 bg-background">
+        <h1 className="text-h1 text-center mb-6">{t('heatIllnessTypesAndResponse')}</h1>
 
         <div className="space-y-4">
           {guides.map((guide, index) => (
@@ -93,11 +95,11 @@ export default function GuidelinePage() {
               className="bg-blue-50 border border-blue-200 rounded-3xl p-5"
             >
               {/* 질환명 */}
-              <h2 className="text-h2 mb-3">{guide.disease}</h2>
+              <h2 className="text-h2 mb-3">{t(`disease_${guide.disease}`)}</h2>
 
               {/* 정의 */}
               <div className="mb-4">
-                <h3 className="text-button mb-2">정의</h3>
+                <h3 className="text-button mb-2">{t('definition')}</h3>
                 <p className="text-body text-foreground/80">
                   {guide.definition}
                 </p>
@@ -105,7 +107,7 @@ export default function GuidelinePage() {
 
               {/* 증상 */}
               <div className="mb-4">
-                <h3 className="text-button mb-2">증상</h3>
+                <h3 className="text-button mb-2">{t('symptoms')}</h3>
                 <ul className="list-disc list-inside space-y-1">
                   {guide.symptoms.map((symptom, idx) => (
                     <li key={idx} className="text-body text-foreground/80">
@@ -117,7 +119,7 @@ export default function GuidelinePage() {
 
               {/* 대응법 */}
               <div>
-                <h3 className="text-button mb-2">대응법</h3>
+                <h3 className="text-button mb-2">{t('response')}</h3>
                 <ul className="list-disc list-inside space-y-1">
                   {guide.advice.map((item, idx) => (
                     <li key={idx} className="text-body text-foreground/80">
@@ -135,21 +137,21 @@ export default function GuidelinePage() {
 
   // suspected = true: AI 진단 + 상세 진단 표시
   return (
-    <div className="min-h-[calc(100vh-4rem)] p-6 bg-background">
+    <div className="min-h-[calc(100vh-4rem-env(safe-area-inset-bottom))] p-6 bg-background">
       <h1 className="text-h1 text-center mb-6 text-red-600">
-        자가진단 결과 안내
+        {t('symptomCheckResult')}
       </h1>
 
       {/* AI 진단 */}
       {aiResult && (
         <div className="bg-blue-50 border border-blue-200 rounded-3xl p-5 mb-4">
-          <h2 className="text-h2 mb-3">AI 진단</h2>
+          <h2 className="text-h2 mb-3">{t('aiDiagnosisTitle')}</h2>
           <div className="mb-3">
-            <h3 className="text-button mb-2">AI 프롬프트 답변 요약</h3>
+            <h3 className="text-button mb-2">{t('aiPromptSummary')}</h3>
             <p className="text-body text-foreground/80">{aiResult.summary}</p>
           </div>
           <div>
-            <h3 className="text-button mb-2">AI 답변 전문</h3>
+            <h3 className="text-button mb-2">{t('aiResponseFull')}</h3>
             <p className="text-body text-foreground/80 whitespace-pre-line">
               {aiResult.detail}
             </p>
@@ -163,11 +165,11 @@ export default function GuidelinePage() {
       {/* 상세 진단 */}
       {diagnosisDetail && (
         <div className="bg-blue-50 border border-blue-200 rounded-3xl p-5">
-          <h2 className="text-h2 mb-3">{diagnosisDetail.disease}</h2>
+          <h2 className="text-h2 mb-3">{t(`disease_${diagnosisDetail.disease}`)}</h2>
 
           {/* 정의 */}
           <div className="mb-4">
-            <h3 className="text-button mb-2">정의</h3>
+            <h3 className="text-button mb-2">{t('definition')}</h3>
             <p className="text-body text-foreground/80">
               {diagnosisDetail.definition}
             </p>
@@ -175,7 +177,7 @@ export default function GuidelinePage() {
 
           {/* 증상 */}
           <div className="mb-4">
-            <h3 className="text-button mb-2">증상</h3>
+            <h3 className="text-button mb-2">{t('symptoms')}</h3>
             <ul className="list-disc list-inside space-y-1">
               {diagnosisDetail.symptoms.map((symptom, idx) => (
                 <li key={idx} className="text-body text-foreground/80">
@@ -187,7 +189,7 @@ export default function GuidelinePage() {
 
           {/* 대응법 */}
           <div>
-            <h3 className="text-button mb-2">대응법</h3>
+            <h3 className="text-button mb-2">{t('response')}</h3>
             <ul className="list-disc list-inside space-y-1">
               {diagnosisDetail.advice.map((item, idx) => (
                 <li key={idx} className="text-body text-foreground/80">

@@ -61,7 +61,7 @@ export default function SearchPage() {
   };
 
   return (
-    <div className="w-full h-[calc(100vh-4rem)] bg-background">
+    <div className="w-full h-[calc(100vh-env(safe-area-inset-bottom))] bg-background">
       {/* 검색바 */}
       <SearchBar
         value={searchValue}

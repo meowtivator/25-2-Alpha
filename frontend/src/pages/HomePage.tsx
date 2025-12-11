@@ -105,8 +105,8 @@ export default function HomePage() {
   };
 
   return (
-    <div className="relative w-full h-[calc(100vh-4rem)]">
-      {/* 지도 - 화면 높이에서 하단 탭바(4rem) 제외 */}
+    <div className="relative w-full h-[calc(100vh-4rem-env(safe-area-inset-bottom))]">
+      {/* 지도 - 화면 높이에서 하단 탭바(4rem) 및 Safe Area 제외 */}
       <div role="region" aria-label={mapLabel} className='w-full h-full'>
         <Map
           center={{ lat: mapCenter.latitude, lng: mapCenter.longitude }}
