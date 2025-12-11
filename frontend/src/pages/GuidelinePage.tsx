@@ -13,6 +13,7 @@ import type {
   AIResult,
 } from '@/types/symptom';
 import { ROUTES } from '@/lib/constants/routes';
+import { symptomGuideData } from '@/data/symptomGuideData';
 
 export default function GuidelinePage() {
   const location = useLocation();
@@ -101,7 +102,7 @@ export default function GuidelinePage() {
               <div className="mb-4">
                 <h3 className="text-button mb-2">{t('definition')}</h3>
                 <p className="text-body text-foreground/80">
-                  {guide.definition}
+                  {symptomGuideData[guide.disease]?.[i18n.language]?.definition || guide.definition}
                 </p>
               </div>
 
@@ -109,7 +110,7 @@ export default function GuidelinePage() {
               <div className="mb-4">
                 <h3 className="text-button mb-2">{t('symptoms')}</h3>
                 <ul className="list-disc list-inside space-y-1">
-                  {guide.symptoms.map((symptom, idx) => (
+                  {(symptomGuideData[guide.disease]?.[i18n.language]?.symptoms || guide.symptoms).map((symptom, idx) => (
                     <li key={idx} className="text-body text-foreground/80">
                       {symptom}
                     </li>
@@ -121,7 +122,7 @@ export default function GuidelinePage() {
               <div>
                 <h3 className="text-button mb-2">{t('response')}</h3>
                 <ul className="list-disc list-inside space-y-1">
-                  {guide.advice.map((item, idx) => (
+                  {(symptomGuideData[guide.disease]?.[i18n.language]?.advice || guide.advice).map((item, idx) => (
                     <li key={idx} className="text-body text-foreground/80">
                       {item}
                     </li>
@@ -171,7 +172,7 @@ export default function GuidelinePage() {
           <div className="mb-4">
             <h3 className="text-button mb-2">{t('definition')}</h3>
             <p className="text-body text-foreground/80">
-              {diagnosisDetail.definition}
+              {symptomGuideData[diagnosisDetail.disease]?.[i18n.language]?.definition || diagnosisDetail.definition}
             </p>
           </div>
 
@@ -179,7 +180,7 @@ export default function GuidelinePage() {
           <div className="mb-4">
             <h3 className="text-button mb-2">{t('symptoms')}</h3>
             <ul className="list-disc list-inside space-y-1">
-              {diagnosisDetail.symptoms.map((symptom, idx) => (
+              {(symptomGuideData[diagnosisDetail.disease]?.[i18n.language]?.symptoms || diagnosisDetail.symptoms).map((symptom, idx) => (
                 <li key={idx} className="text-body text-foreground/80">
                   {symptom}
                 </li>
@@ -191,7 +192,7 @@ export default function GuidelinePage() {
           <div>
             <h3 className="text-button mb-2">{t('response')}</h3>
             <ul className="list-disc list-inside space-y-1">
-              {diagnosisDetail.advice.map((item, idx) => (
+              {(symptomGuideData[diagnosisDetail.disease]?.[i18n.language]?.advice || diagnosisDetail.advice).map((item, idx) => (
                 <li key={idx} className="text-body text-foreground/80">
                   {item}
                 </li>
