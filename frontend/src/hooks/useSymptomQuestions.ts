@@ -1,11 +1,14 @@
 
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { SymptomQuestion } from '../types/symptom';
 import { fetchSymptomQuestions } from '@/api/symptomApi';
+
 export function useSymptomQuestions(){
   const [questions, setQuestions] = useState<SymptomQuestion[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
+  const { i18n } = useTranslation();
 
   useEffect(() => {
     let isMounted = true;
@@ -36,7 +39,7 @@ export function useSymptomQuestions(){
     return ()=>{
       isMounted = false;
     };
-  }, []);
+  }, [i18n.language]); // 언어가 변경될 때마다 재실행
 
   const retry = async() => {
     setLoading(true);

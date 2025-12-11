@@ -1,4 +1,5 @@
 import { API_BASE_URL, API_ENDPOINTS } from '@/lib/constants/api';
+import i18n from '@/lib/i18n';
 import type {
   SymptomQuestion,
   DiagnosisRequest,
@@ -21,6 +22,7 @@ export async function fetchSymptomQuestions(): Promise<SymptomQuestion[]> {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
+          'Accept-Language': i18n.language,
         },
       },
     );
@@ -54,6 +56,7 @@ export async function submitDiagnosis(
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Accept-Language': i18n.language,
         },
         body: JSON.stringify(request),
       }
@@ -84,6 +87,7 @@ export async function fetchSymptomGuides(): Promise<SymptomGuide[]> {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
+          'Accept-Language': i18n.language,
         },
       }
     );
@@ -116,6 +120,7 @@ export async function fetchDiagnosisDetail(
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
+          'Accept-Language': i18n.language,
         },
       }
     );
@@ -148,6 +153,7 @@ export async function fetchAIResult(
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
+          'Accept-Language': i18n.language,
         },
       }
     );

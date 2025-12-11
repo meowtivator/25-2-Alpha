@@ -1,11 +1,13 @@
 // src/pages/DiagnosisResultPage.tsx
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import type { DiagnosisResponse } from '@/types/symptom';
 import { ROUTES } from '@/lib/constants/routes';
 
 export default function DiagnosisResultPage() {
   const location = useLocation();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const diagnosisResult = location.state?.diagnosisResult as
     | DiagnosisResponse
     | undefined;
@@ -36,15 +38,18 @@ export default function DiagnosisResultPage() {
     navigate(ROUTES.HELPER);
   };
 
+  const headlineKey = diagnosisResult.suspected ? 'diagnosisHeadlineSuspected' : 'diagnosisHeadlineNormal';
+  const descriptionKey = diagnosisResult.suspected ? 'diagnosisDescriptionSuspected' : 'diagnosisDescriptionNormal';
+
   return (
-    <div className="min-h-[calc(100vh-4rem)] p-6 bg-background flex flex-col items-center justify-center">
+    <div className="min-h-[calc(100vh-4rem-env(safe-area-inset-bottom))] p-6 bg-background flex flex-col items-center justify-center">
       {/* 헤드라인 */}
-      <h1 className={`text-h1 text-center mb-6 ${diagnosisResult.suspected ? 'text-red-600' : 'text-blue-600'}`}>{diagnosisResult.headline}</h1>
+      <h1 className={`text-h1 text-center mb-6 ${diagnosisResult.suspected ? 'text-red-600' : 'text-blue-600'}`}>{t(headlineKey)}</h1>
 
       {/* 메시지 */}
       <div className="text-center mb-8">
-        <p className="text-body text-foreground">
-          {diagnosisResult.description}
+        <p className="text-body text-foreground whitespace-pre-line">
+          {t(descriptionKey)}
         </p>
       </div>
 
@@ -54,21 +59,21 @@ export default function DiagnosisResultPage() {
           onClick={handleViewGuidelines}
           className="w-[234px] px-12 py-5 bg-blue-100 text-[#191A1C] rounded-[50px] text-button hover:bg-blue-200 active:bg-blue-300"
         >
-          대처 방안 확인하기
+          {t('viewResponseTips')}
         </button>
 
         {diagnosisResult.suspected && <button
           onClick={handleFindHospital}
           className="w-[234px] px-12 py-5 bg-blue-100 text-[#191A1C] rounded-[50px] text-button hover:bg-blue-200 active:bg-blue-300"
         >
-          내 주변 병원 찾기
+          {t('findNearbyHospitals')}
         </button>}
 
         <button
           onClick={handleRestart}
           className="w-[234px] px-12 py-5 bg-blue-100 text-[#191A1C] rounded-[50px] text-button hover:bg-blue-200 active:bg-blue-300"
         >
-          다시 진단하기
+          {t('checkAgain')}
         </button>
       </div>
     </div>

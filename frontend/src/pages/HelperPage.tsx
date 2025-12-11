@@ -17,11 +17,23 @@ export default function HelperPage() {
   const [answers, setAnswers] = useState<SymptomAnswer[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+
+  // i18n 언어에 따라 TTS 언어 매핑
+  const getTTSLanguage = (lang: string) => {
+    const langMap: Record<string, string> = {
+      'ko': 'ko-KR',
+      'en': 'en-US',
+      'ja': 'ja-JP',
+      'vi': 'vi-VN',
+      'zh': 'zh-CN',
+    };
+    return langMap[lang] || 'ko-KR';
+  };
 
   // TTS 훅 초기화
   const { speak, stop } = useTTS({
-    lang: 'ko-KR',
+    lang: getTTSLanguage(i18n.language),
     rate: 0.9, // 약간 느리게 (더 명확하게)
     pitch: 1.0,
     volume: 1.0,
@@ -148,7 +160,7 @@ export default function HelperPage() {
   // 인트로 화면
   if (showIntro) {
     return (
-      <div className="flex flex-col items-center justify-center h-[calc(100vh-4rem)] p-6 bg-background">
+      <div className="flex flex-col items-center justify-center h-[calc(100vh-4rem-env(safe-area-inset-bottom))] p-6 bg-background">
         <h1 className="text-h1 mb-4 text-center">{t('seasonalIllnessChecker')}</h1>
         <p className="text-body text-foreground/60 text-center mb-8 whitespace-pre-line">
           {t('seasonalIntroDescription')}
@@ -165,7 +177,7 @@ export default function HelperPage() {
 
   if (!isSeleted) {
     return (
-      <div className="flex flex-col items-center justify-center h-[calc(100vh-4rem)] p-6 bg-background">
+      <div className="flex flex-col items-center justify-center h-[calc(100vh-4rem-env(safe-area-inset-bottom))] p-6 bg-background">
         <button
           onClick={handleSelectWithTTS}
           className="mb-10 px-14 py-5 bg-blue-100 text-[#191A1C] rounded-3xl text-button hover:bg-blue-200 active:bg-blue-300"
@@ -184,11 +196,11 @@ export default function HelperPage() {
   
   // 질문 화면
   return (
-    <div className="flex flex-col h-[calc(100vh-4rem)] bg-background">
+    <div className="flex flex-col h-[calc(100vh-4rem-env(safe-area-inset-bottom))] bg-background">
       {/* 질문 영역 */}
       <div className="flex-1 flex flex-col items-center justify-center p-6">
         <div className="w-full max-w-md">
-          <p className="text-h1 text-center mb-12 text-blue-900">{currentQuestion.questionText}</p>
+          <p className="text-h1 text-center mb-12 text-blue-900">{t(currentQuestion.questionCode)}</p>
 
           <div className="flex gap-12 justify-center items-center">
             <button
