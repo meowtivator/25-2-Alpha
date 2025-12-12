@@ -1,5 +1,5 @@
 // src/pages/HomePage.tsx
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Search } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -39,13 +39,46 @@ export default function HomePage() {
     longitude: number;
   } | null>(null);
 
-  // 사용자 현재 위치 가져오기
+  // 현재 위치 가져오기 완료 여부 - ref를 사용해 동기적으로 체크
+  const hasInitializedLocationRef = useRef(false);
+
+  // SearchPage에서 전달받은 state 처리 (가장 먼저 실행)
   useEffect(() => {
-    // autoLocateOnLaunch가 꺼져있으면 위치 탐색 안 함
-    if (!autoLocateOnLaunch) {
-      console.log('📍 자동 위치 탐색이 비활성화되어 있습니다.');
+    const state = location.state as { selectedShelter?: ShelterDetail };
+
+    if (state?.selectedShelter) {
+      const shelter = state.selectedShelter;
+
+      console.log('🎯 선택된 쉼터로 이동:', shelter);
+
+      // 선택된 쉼터 저장 (마커 표시용)
+      setSelectedShelter(shelter);
+
+      // 지도 중심을 선택된 쉼터 위치로 설정
+      setMapCenter({
+        latitude: shelter.lat,
+        longitude: shelter.lon,
+      });
+
+      // 모달 열기
+      setIsModalOpen(true);
+
+      // state 초기화 (뒤로가기 시 다시 표시 방지)
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [location.state, navigate, location.pathname]);
+
+  // 사용자 현재 위치 가져오기 (페이지 최초 로딩 시 단 한번만 실행)
+  useEffect(() => {
+    // 이미 위치 초기화가 완료되었거나, autoLocateOnLaunch가 꺼져있으면 실행 안 함
+    if (hasInitializedLocationRef.current || !autoLocateOnLaunch) {
+      if (!autoLocateOnLaunch && !hasInitializedLocationRef.current) {
+        console.log('📍 자동 위치 탐색이 비활성화되어 있습니다.');
+      }
       return;
     }
+
+    console.log('📍 현재 위치 가져오기 시작...');
 
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -54,43 +87,26 @@ export default function HomePage() {
           setUserLocation({ latitude, longitude });
           console.log('✅ 사용자 현재 위치:', { latitude, longitude });
 
-          // 검색에서 선택한 쉼터가 없으면 현재 위치로 지도 중심 설정
-          if (!selectedShelter) {
-            setMapCenter({ latitude, longitude });
-          }
+          // ⚠️ 중요: 선택된 쉼터가 없을 때만 지도 중심을 사용자 위치로 설정
+          setMapCenter((prev) => {
+            // 선택된 쉼터가 있는 경우 (기본 좌표가 아닌 경우) 현재 맵 중심 유지
+            if (prev.latitude !== 37.5665 || prev.longitude !== 126.978) {
+              return prev;
+            }
+            // 기본 좌표인 경우 사용자 위치로 업데이트
+            return { latitude, longitude };
+          });
+          hasInitializedLocationRef.current = true;
         },
         (error) => {
           console.error('❌ 위치 정보를 가져올 수 없습니다:', error);
+          hasInitializedLocationRef.current = true;
         }
       );
+    } else {
+      hasInitializedLocationRef.current = true;
     }
-  }, [selectedShelter, autoLocateOnLaunch]);
-
-  // SearchPage에서 전달받은 state 처리
-  useEffect(() => {
-    const state = location.state as { selectedShelter?: ShelterDetail };
-
-    if (state?.selectedShelter) {
-      const shelter = state.selectedShelter;
-
-      // 백엔드에서 좌표를 제공하므로 바로 사용
-      setMapCenter({
-        latitude: shelter.lat,
-        longitude: shelter.lon,
-      });
-
-      // 선택된 쉼터 저장 (마커 표시용)
-      setSelectedShelter(shelter);
-
-      // 모달 열기
-      setIsModalOpen(true);
-
-      console.log('선택된 쉼터:', shelter);
-
-      // state 초기화 (뒤로가기 시 다시 표시 방지)
-      navigate(location.pathname, { replace: true, state: {} });
-    }
-  }, [location.state, navigate, location.pathname]);
+  }, [autoLocateOnLaunch]);
 
   const handleSearchBarFocus = () => {
     navigate(ROUTES.SEARCH); // 검색 페이지로 이동
@@ -161,6 +177,7 @@ export default function HomePage() {
         <ShelterInfoModal
           shelter={selectedShelter}
           onClose={handleCloseModal}
+          userLocation={userLocation}
         />
       )}
     </div>

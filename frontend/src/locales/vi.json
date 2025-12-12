@@ -147,5 +147,11 @@
   "disease_열발진": "Phát ban vì nóng",
   "disease_일광화상": "Cháy nắng",
   "disease_열사병": "Đột quỵ nhiệt",
-  "disease_열부종": "Phù do nóng"
+  "disease_열부종": "Phù do nóng",
+  "shelterType_PUBLIC": "Công cộng",
+  "shelterType_PRIVATE": "Tư nhân",
+  "shelterCategory_경로당": "Trung tâm người cao tuổi",
+  "shelterCategory_주민센터": "Trung tâm cộng đồng",
+  "shelterCategory_복지관": "Trung tâm phúc lợi",
+  "shelterCategory_도서관": "Thư viện"
 }

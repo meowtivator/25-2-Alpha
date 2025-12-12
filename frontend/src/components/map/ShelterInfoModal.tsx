@@ -6,10 +6,80 @@ import type { ShelterDetail } from '@/types/shelter';
 interface ShelterInfoModalProps {
   shelter: ShelterDetail;
   onClose: () => void;
+  userLocation?: {
+    latitude: number;
+    longitude: number;
+  } | null;
 }
 
-export function ShelterInfoModal({ shelter, onClose }: ShelterInfoModalProps) {
+export function ShelterInfoModal({ shelter, onClose, userLocation }: ShelterInfoModalProps) {
   const { t } = useTranslation();
+
+  // 카카오맵 길찾기 - 출발 (현재 위치 → 쉼터)
+  const handleDeparture = () => {
+    if (userLocation) {
+      // 사용자 위치가 있는 경우: 카카오맵 앱 시도, 실패 시 네이버 지도 웹
+      const appUrl = `kakaomap://route?sp=${userLocation.latitude},${userLocation.longitude}&ep=${shelter.lat},${shelter.lon}&by=PUBLICTRANSIT`;
+
+      // 앱이 설치되지 않은 경우를 위한 폴백 처리 (네이버 지도 웹)
+      const startTime = Date.now();
+      const fallbackTimeout = setTimeout(() => {
+        // 앱이 열리지 않았다면 네이버 지도 웹으로 이동 (출발지 + 목적지 모두 지정 가능)
+        if (Date.now() - startTime >= 2000) {
+          const naverUrl = `https://map.naver.com/p/directions/${userLocation.longitude},${userLocation.latitude},현재위치/${shelter.lon},${shelter.lat},${encodeURIComponent(shelter.name)}/-/transit`;
+          window.open(naverUrl, '_blank');
+        }
+      }, 2500);
+
+      // 페이지가 숨겨지면 (앱이 열리면) 폴백 취소
+      const handleVisibilityChange = () => {
+        if (document.hidden) {
+          clearTimeout(fallbackTimeout);
+        }
+      };
+      document.addEventListener('visibilitychange', handleVisibilityChange, { once: true });
+
+      // 앱 URL 시도
+      window.location.href = appUrl;
+    } else {
+      // 사용자 위치가 없는 경우: 네이버 지도 웹으로 목적지만 설정
+      const naverUrl = `https://map.naver.com/p/search/${encodeURIComponent(shelter.name)}`;
+      window.open(naverUrl, '_blank');
+    }
+  };
+
+  // 카카오맵 길찾기 - 도착 (쉼터 → 현재 위치)
+  const handleArrival = () => {
+    if (userLocation) {
+      // 사용자 위치가 있는 경우: 카카오맵 앱 시도, 실패 시 네이버 지도 웹
+      const appUrl = `kakaomap://route?sp=${shelter.lat},${shelter.lon}&ep=${userLocation.latitude},${userLocation.longitude}&by=PUBLICTRANSIT`;
+
+      // 앱이 설치되지 않은 경우를 위한 폴백 처리 (네이버 지도 웹)
+      const startTime = Date.now();
+      const fallbackTimeout = setTimeout(() => {
+        // 앱이 열리지 않았다면 네이버 지도 웹으로 이동 (출발지 + 목적지 모두 지정 가능)
+        if (Date.now() - startTime >= 2000) {
+          const naverUrl = `https://map.naver.com/p/directions/${shelter.lon},${shelter.lat},${encodeURIComponent(shelter.name)}/${userLocation.longitude},${userLocation.latitude},현재위치/-/transit`;
+          window.open(naverUrl, '_blank');
+        }
+      }, 2500);
+
+      // 페이지가 숨겨지면 (앱이 열리면) 폴백 취소
+      const handleVisibilityChange = () => {
+        if (document.hidden) {
+          clearTimeout(fallbackTimeout);
+        }
+      };
+      document.addEventListener('visibilitychange', handleVisibilityChange, { once: true });
+
+      // 앱 URL 시도
+      window.location.href = appUrl;
+    } else {
+      // 사용자 위치가 없는 경우: 네이버 지도 웹으로 출발지만 설정
+      const naverUrl = `https://map.naver.com/p/search/${encodeURIComponent(shelter.name)}`;
+      window.open(naverUrl, '_blank');
+    }
+  };
   // 스냅 단계 상태
   const [isExpanded, setIsExpanded] = useState(false);
   // 드래그 진행 중 오프셋(px). 0은 스냅 포인트.
@@ -171,10 +241,16 @@ export function ShelterInfoModal({ shelter, onClose }: ShelterInfoModalProps) {
 
           {/* 버튼 그룹 */}
           <div className="flex gap-2 mb-6">
-            <button className="flex-1 py-3 bg-blue-100 text-blue-900 rounded-full text-body-small font-semibold border-2 border-blue-300 hover:bg-blue-200 active:bg-blue-300 transition-colors">
+            <button
+              onClick={handleDeparture}
+              className="flex-1 py-3 bg-blue-100 text-blue-900 rounded-full text-body-small font-semibold border-2 border-blue-300 hover:bg-blue-200 active:bg-blue-300 transition-colors"
+            >
               {t('departure')}
             </button>
-            <button className="flex-1 py-3 bg-blue-100 text-blue-900 rounded-full text-body-small font-semibold border-2 border-blue-300 hover:bg-blue-200 active:bg-blue-300 transition-colors">
+            <button
+              onClick={handleArrival}
+              className="flex-1 py-3 bg-blue-100 text-blue-900 rounded-full text-body-small font-semibold border-2 border-blue-300 hover:bg-blue-200 active:bg-blue-300 transition-colors"
+            >
               {t('arrival')}
             </button>
           </div>
@@ -204,20 +280,10 @@ export function ShelterInfoModal({ shelter, onClose }: ShelterInfoModalProps) {
             {/* 구분선 */}
             <div className="border-t border-gray-200 my-4" />
 
-            {/* 분류 - 항상 표시 */}
-            <div className="flex items-start gap-3">
-              <span className="text-body font-semibold text-foreground min-w-[80px]">
-                분류
-              </span>
-              <span className="text-body text-foreground">
-                {shelter.category || '-'} / {shelter.type || '-'}
-              </span>
-            </div>
-
             {/* 운영시간 - 항상 표시 */}
             <div className="flex items-start gap-3">
               <span className="text-body font-semibold text-foreground min-w-[80px]">
-                평일 운영
+                {t('weekdayOperation')}
               </span>
               <span className="text-body text-foreground">
                 {shelter.weekdayOpenTime && shelter.weekdayCloseTime
@@ -226,30 +292,10 @@ export function ShelterInfoModal({ shelter, onClose }: ShelterInfoModalProps) {
               </span>
             </div>
 
-            {/* 야간 운영 */}
-            <div className="flex items-start gap-3">
-              <span className="text-body font-semibold text-foreground min-w-[80px]">
-                야간 운영
-              </span>
-              <span className="text-body text-foreground">
-                {shelter.nightOpen ? '가능' : '불가능'}
-              </span>
-            </div>
-
-            {/* 주말 운영 */}
-            <div className="flex items-start gap-3">
-              <span className="text-body font-semibold text-foreground min-w-[80px]">
-                주말 운영
-              </span>
-              <span className="text-body text-foreground">
-                {shelter.weekendOpen ? '가능' : '불가능'}
-              </span>
-            </div>
-
             {/* 시설 면적 - 항상 표시 */}
             <div className="flex items-start gap-3">
               <span className="text-body font-semibold text-foreground min-w-[80px]">
-                시설 면적
+                {t('facilityArea')}
               </span>
               <span className="text-body text-foreground">
                 {shelter.area ? `${shelter.area}㎡` : '-'}
@@ -259,7 +305,7 @@ export function ShelterInfoModal({ shelter, onClose }: ShelterInfoModalProps) {
             {/* 이용 가능 인원 - 항상 표시 */}
             <div className="flex items-start gap-3">
               <span className="text-body font-semibold text-foreground min-w-[80px]">
-                이용 가능 인원
+                {t('capacity')}
               </span>
               <span className="text-body text-foreground">
                 {shelter.capacity ? `${shelter.capacity}명` : '-'}
@@ -269,7 +315,7 @@ export function ShelterInfoModal({ shelter, onClose }: ShelterInfoModalProps) {
             {/* 선풍기 보유 - 항상 표시 */}
             <div className="flex items-start gap-3">
               <span className="text-body font-semibold text-foreground min-w-[80px]">
-                선풍기 보유
+                {t('fanCount')}
               </span>
               <span className="text-body text-foreground">
                 {shelter.fanCount ? `${shelter.fanCount}대` : '-'}
@@ -279,7 +325,7 @@ export function ShelterInfoModal({ shelter, onClose }: ShelterInfoModalProps) {
             {/* 에어컨 보유 - 항상 표시 */}
             <div className="flex items-start gap-3">
               <span className="text-body font-semibold text-foreground min-w-[80px]">
-                에어컨 보유
+                {t('acCount')}
               </span>
               <span className="text-body text-foreground">
                 {shelter.airconCount ? `${shelter.airconCount}대` : '-'}

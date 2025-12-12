@@ -15,7 +15,7 @@ export default function SearchPage() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const showColdShelters = useSettingsStore((state) => state.showColdShelters);
-  const seasonType = showColdShelters ? 'winter' : 'summer';
+  const seasonType = showColdShelters ? 'COLD' : 'HEAT';
   const [searchValue, setSearchValue] = useState('');
   const [searchResults, setSearchResults] = useState<ShelterSearchItem[]>([]);
   const [loading, setLoading] = useState(false);
@@ -35,7 +35,7 @@ export default function SearchPage() {
     try {
       setLoading(true);
       setErrorKey(null);
-      const response = await searchShelters(value, 0, 20, seasonType);
+      const response = await searchShelters(value, seasonType, undefined, 0, 20);
       setSearchResults(response.content);
     } catch (err) {
       console.error('쉼터 검색 실패:', err);
@@ -48,7 +48,7 @@ export default function SearchPage() {
 
   const handleNavigate = async (shelterId: number) => {
     try {
-      const shelterDetail = await fetchShelterDetail(shelterId);
+      const shelterDetail = await fetchShelterDetail(shelterId, seasonType);
       navigate(ROUTES.HOME, {
         state: {
           selectedShelter: shelterDetail,

@@ -148,5 +148,11 @@
   "disease_열발진": "あせも",
   "disease_일광화상": "日焼け",
   "disease_열사병": "熱射病",
-  "disease_열부종": "熱浮腫"
+  "disease_열부종": "熱浮腫",
+  "shelterType_PUBLIC": "公共",
+  "shelterType_PRIVATE": "民間",
+  "shelterCategory_경로당": "敬老堂",
+  "shelterCategory_주민센터": "住民センター",
+  "shelterCategory_복지관": "福祉館",
+  "shelterCategory_도서관": "図書館"
 }
