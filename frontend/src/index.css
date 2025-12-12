@@ -1,68 +1,301 @@
+/* src/index.css */
+
+/* ⭐ Tailwind CSS v4 임포트 */
+@import 'tailwindcss';
+
+/* CSS 변수 정의 */
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  --background: #f8f7f4;
+  --foreground: #171717;
 }
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
+/* Tailwind 테마 설정 */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  /* 폰트 패밀리 */
+  --font-sans:
+    'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont,
+    system-ui, sans-serif;
+
+  /* Blue 색상 팔레트 */
+  --color-blue-50: #edf4ff;
+  --color-blue-100: #c8ddff;
+  --color-blue-200: #aecaff;
+  --color-blue-300: #88b2ff;
+  --color-blue-400: #71a3ff;
+  --color-blue-500: #4e8cff;
+  --color-blue-600: #4777e8;
+  --color-blue-700: #3763b5;
+  --color-blue-800: #2b4d8c;
+  --color-blue-900: #213d6b;
+
+  /* Red 색상 팔레트 */
+  --color-red-50: #fff0ed;
+  --color-red-100: #ffd1c8;
+  --color-red-200: #ffbaae;
+  --color-red-300: #ff9b89;
+  --color-red-400: #ff8772;
+  --color-red-500: #ff694f;
+  --color-red-600: #e86048;
+  --color-red-700: #b54b38;
+  --color-red-800: #8c3a2b;
+  --color-red-900: #6b2c21;
 }
 
-body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
+body.theme-red {
+  --color-blue-50: var(--color-red-50);
+  --color-blue-100: var(--color-red-100);
+  --color-blue-200: var(--color-red-200);
+  --color-blue-300: var(--color-red-300);
+  --color-blue-400: var(--color-red-400);
+  --color-blue-500: var(--color-red-500);
+  --color-blue-600: var(--color-red-600);
+  --color-blue-700: var(--color-red-700);
+  --color-blue-800: var(--color-red-800);
+  --color-blue-900: var(--color-red-900);
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+body.theme-red .bg-blue-50 { background-color: var(--color-red-50) !important; }
+body.theme-red .bg-blue-100 { background-color: var(--color-red-100) !important; }
+body.theme-red .bg-blue-200 { background-color: var(--color-red-200) !important; }
+body.theme-red .bg-blue-300 { background-color: var(--color-red-300) !important; }
+body.theme-red .bg-blue-900 { background-color: var(--color-red-900) !important; }
+
+body.theme-red .text-blue-100 { color: var(--color-red-100) !important; }
+body.theme-red .text-blue-200 { color: var(--color-red-200) !important; }
+body.theme-red .text-blue-500 { color: var(--color-red-500) !important; }
+body.theme-red .text-blue-600 { color: var(--color-red-600) !important; }
+body.theme-red .text-blue-900 { color: var(--color-red-900) !important; }
+
+body.theme-red .border-blue-100 { border-color: var(--color-red-100) !important; }
+body.theme-red .border-blue-200 { border-color: var(--color-red-200) !important; }
+body.theme-red .border-blue-300 { border-color: var(--color-red-300) !important; }
+
+body.theme-red .hover\:text-blue-500:hover { color: var(--color-red-500) !important; }
+body.theme-red .hover\:bg-blue-200:hover { background-color: var(--color-red-200) !important; }
+body.theme-red .active\:bg-blue-300:active { background-color: var(--color-red-300) !important; }
+
+/* ========================================
+   📱 일반 사용자 타이포그래피 (기본값)
+   핑크 메모지 기준
+   ======================================== */
+:root,
+body.typography-default {
+  /* Font Sizes */
+  --font-size-h1: 24px;
+  --font-size-h2: 24px;
+  --font-size-subheading: 18px;
+  --font-size-body: 16px;
+  --font-size-body-small: 14px;
+  --font-size-caption: 14px;
+  --font-size-button: 16px;
+  --font-size-nav: 16px;
+  --font-size-placeholder: 14px;
+  --font-size-alert: 16px;
+
+  /* Font Weights */
+  --font-weight-h1: 700; /* Bold */
+  --font-weight-h2: 600; /* SemiBold */
+  --font-weight-subheading: 500; /* Medium */
+  --font-weight-body: 400; /* Regular */
+  --font-weight-caption: 600; /* SemiBold */
+  --font-weight-button: 600; /* SemiBold */
+  --font-weight-nav: 500; /* Medium */
+  --font-weight-placeholder: 400;
+  --font-weight-alert: 500;
+
+  /* Line Heights */
+  --line-height-h1: 36px;
+  --line-height-h2: 36px;
+  --line-height-subheading: 27px;
+  --line-height-body: 24px;
+  --line-height-body-small: 21px;
+  --line-height-caption: 21px;
+  --line-height-button: 24px;
+  --line-height-nav: 24px;
+  --line-height-alert: 24px;
+
+  /* Letter Spacing */
+  --letter-spacing-h1: -0.3px;
+  --letter-spacing-h2: -0.3px;
+  --letter-spacing-subheading: -0.2px;
+  --letter-spacing-body: -0.1px;
+  --letter-spacing-caption: -0.1px;
+  --letter-spacing-button: 0px;
+  --letter-spacing-nav: 0px;
+  --letter-spacing-alert: -0.1px;
+
 }
 
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+/* ========================================
+   👴 고령층 사용자 타이포그래피
+   표 오른쪽 컬럼 기준 (더 크고 굵게)
+   ======================================== */
+body.typography-senior {
+  /* Font Sizes - 고령층용 (더 큼) */
+  --font-size-h1: 32px; /* 24 → 32 */
+  --font-size-h2: 28px; /* 24 → 28 */
+  --font-size-subheading: 24px; /* 18 → 24 */
+  --font-size-body: 22px; /* 16 → 22 */
+  --font-size-body-small: 18px; /* 14 → 18 */
+  --font-size-caption: 18px; /* 14 → 18 */
+  --font-size-button: 20px; /* 16 → 20 */
+  --font-size-nav: 20px; /* 16 → 20 */
+  --font-size-placeholder: 18px;
+  --font-size-alert: 20px;
+
+  /* Font Weights - 고령층용 (더 굵음) */
+  --font-weight-h1: 800; /* Bold → ExtraBold */
+  --font-weight-h2: 700; /* SemiBold → Bold */
+  --font-weight-subheading: 600; /* Medium → SemiBold */
+  --font-weight-body: 500; /* Regular → Medium */
+  --font-weight-caption: 700; /* SemiBold → Bold */
+  --font-weight-button: 700; /* SemiBold → Bold */
+  --font-weight-nav: 600; /* Medium → SemiBold */
+  --font-weight-placeholder: 400;
+  --font-weight-alert: 700;
+
+  /* Line Heights - 고령층용 (비례 증가) */
+  --line-height-h1: 48px; /* 36 → 48 */
+  --line-height-h2: 42px; /* 36 → 42 */
+  --line-height-subheading: 36px; /* 27 → 36 */
+  --line-height-body: 33px; /* 24 → 33 */
+  --line-height-body-small: 27px; /* 21 → 27 */
+  --line-height-caption: 27px; /* 21 → 27 */
+  --line-height-button: 30px; /* 24 → 30 */
+  --line-height-nav: 30px; /* 24 → 30 */
+  --line-height-alert: 30px;
+
+  /* Letter Spacing - 고령층용 (가독성 향상) */
+  --letter-spacing-h1: -0.4px;
+  --letter-spacing-h2: -0.4px;
+  --letter-spacing-subheading: -0.3px;
+  --letter-spacing-body: -0.2px;
+  --letter-spacing-caption: -0.2px;
+  --letter-spacing-button: 0px;
+  --letter-spacing-nav: 0px;
+  --letter-spacing-alert: -0.2px;
+
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
+/* ========================================
+   타이포그래피 유틸리티 클래스
+   (CSS 변수를 참조하므로 모드 전환 시 자동 적용)
+   ======================================== */
+@layer utilities {
+  .text-h1 {
+    font-size: var(--font-size-h1);
+    font-weight: var(--font-weight-h1);
+    line-height: var(--line-height-h1);
+    letter-spacing: var(--letter-spacing-h1);
   }
-  a:hover {
-    color: #747bff;
+
+  .text-h2 {
+    font-size: var(--font-size-h2);
+    font-weight: var(--font-weight-h2);
+    line-height: var(--line-height-h2);
+    letter-spacing: var(--letter-spacing-h2);
   }
-  button {
-    background-color: #f9f9f9;
+
+  .text-subheading {
+    font-size: var(--font-size-subheading);
+    font-weight: var(--font-weight-subheading);
+    line-height: var(--line-height-subheading);
+    letter-spacing: var(--letter-spacing-subheading);
+  }
+
+  .text-body {
+    font-size: var(--font-size-body);
+    font-weight: var(--font-weight-body);
+    line-height: var(--line-height-body);
+    letter-spacing: var(--letter-spacing-body);
+  }
+
+  .text-body-small {
+    font-size: var(--font-size-body-small);
+    font-weight: var(--font-weight-body);
+    line-height: var(--line-height-body-small);
+    letter-spacing: var(--letter-spacing-body);
+  }
+
+  .text-caption {
+    font-size: var(--font-size-caption);
+    font-weight: var(--font-weight-caption);
+    line-height: var(--line-height-caption);
+    letter-spacing: var(--letter-spacing-caption);
+  }
+
+  .text-button {
+    font-size: var(--font-size-button);
+    font-weight: var(--font-weight-button);
+    line-height: var(--line-height-button);
+    letter-spacing: var(--letter-spacing-button);
+  }
+
+  .text-nav {
+    font-size: var(--font-size-nav);
+    font-weight: var(--font-weight-nav);
+    line-height: var(--line-height-nav);
+    letter-spacing: var(--letter-spacing-nav);
+  }
+
+  .text-alert {
+    font-size: var(--font-size-alert);
+    font-weight: var(--font-weight-alert);
+    line-height: var(--line-height-alert);
+    letter-spacing: var(--letter-spacing-alert);
+  }
+}
+
+/* 베이스 스타일 */
+@layer base {
+  /* Safe Area Insets 지원 */
+  html, body {
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  }
+
+  body {
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    /* 모바일 브라우저 UI 대응 */
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+  }
+
+  html {
+    height: -webkit-fill-available;
+  }
+}
+
+/* 모달 애니메이션 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
