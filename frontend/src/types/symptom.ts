@@ -25,8 +25,9 @@ export interface SymptomAnswer {
 export interface DiagnosisRequest {
   answers: Array<{
     id: number;
-    answer: 'yes' | 'no';
+    answer: string;
   }>;
+  language: string;
 }
 
 /**
