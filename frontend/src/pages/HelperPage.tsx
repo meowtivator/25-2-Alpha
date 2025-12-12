@@ -46,10 +46,10 @@ export default function HelperPage() {
     if (useTTSMode && currentQuestion && isSeleted && !isSubmitting) {
       // 이전 음성 중지
       stop();
-      // 새 질문 읽기
-      speak(currentQuestion.questionText);
+      // 새 질문 읽기 (번역된 텍스트 사용)
+      speak(t(currentQuestion.questionCode));
     }
-  }, [currentQuestion, useTTSMode, isSeleted, isSubmitting, speak, stop]);
+  }, [currentQuestion, useTTSMode, isSeleted, isSubmitting, speak, stop, t]);
 
   // 컴포넌트 언마운트 시 음성 중지
   useEffect(() => {
@@ -88,15 +88,16 @@ export default function HelperPage() {
         { questionCode: lastQuestionCode, answer: lastAnswer },
       ];
 
-      // 백엔드 API 형식에 맞게 변환: { id, answer: 'yes' | 'no' }
+      // 백엔드 API 형식에 맞게 변환: { answers, language }
       const diagnosisRequest = {
         answers: finalAnswers.map((ans) => {
           const question = questions.find((q) => q.questionCode === ans.questionCode);
           return {
             id: question!.id,
-            answer: ans.answer ? ('yes' as const) : ('no' as const),
+            answer: ans.answer ? 'yes' : 'no',
           };
         }),
+        language: i18n.language,
       };
 
       console.log('진단 요청:', diagnosisRequest);
@@ -167,9 +168,9 @@ export default function HelperPage() {
         </p>
         <button
           onClick={handleStart}
-          className="px-10 py-8 bg-blue-100 text-[#191A1C] rounded-3xl text-button hover:bg-blue-200 active:bg-blue-300"
+          className="w-64 h-20 bg-blue-100 text-[#191A1C] rounded-3xl text-button hover:bg-blue-200 active:bg-blue-300 flex items-center justify-center"
         >
-          {t('startSymptomCheck')}
+          <span className="text-center px-4 leading-tight">{t('startSymptomCheck')}</span>
         </button>
       </div>
     );
@@ -180,15 +181,15 @@ export default function HelperPage() {
       <div className="flex flex-col items-center justify-center h-[calc(100vh-4rem-env(safe-area-inset-bottom))] p-6 bg-background">
         <button
           onClick={handleSelectWithTTS}
-          className="mb-10 px-14 py-5 bg-blue-100 text-[#191A1C] rounded-3xl text-button hover:bg-blue-200 active:bg-blue-300"
+          className="mb-10 w-72 h-24 bg-blue-100 text-[#191A1C] rounded-3xl text-button hover:bg-blue-200 active:bg-blue-300 flex items-center justify-center"
         >
-          <span className="whitespace-pre-line">{t('voiceGuidanceCheck')}</span>
+          <span className="whitespace-pre-line text-center px-4 leading-tight">{t('voiceGuidanceCheck')}</span>
         </button>
         <button
           onClick={handleSelectWithoutTTS}
-          className="px-14 py-5 bg-blue-100 text-[#191A1C] rounded-3xl text-button hover:bg-blue-200 active:bg-blue-300"
+          className="w-72 h-24 bg-blue-100 text-[#191A1C] rounded-3xl text-button hover:bg-blue-200 active:bg-blue-300 flex items-center justify-center"
         >
-          <span className="whitespace-pre-line">{t('questionnaireCheck')}</span>
+          <span className="whitespace-pre-line text-center px-4 leading-tight">{t('questionnaireCheck')}</span>
         </button>
       </div>
     );
