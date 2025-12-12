@@ -148,5 +148,11 @@
   "disease_열발진": "열발진",
   "disease_일광화상": "일광화상",
   "disease_열사병": "열사병",
-  "disease_열부종": "열부종"
+  "disease_열부종": "열부종",
+  "shelterType_PUBLIC": "공공",
+  "shelterType_PRIVATE": "민간",
+  "shelterCategory_경로당": "경로당",
+  "shelterCategory_주민센터": "주민센터",
+  "shelterCategory_복지관": "복지관",
+  "shelterCategory_도서관": "도서관"
 }

@@ -147,5 +147,11 @@
   "disease_열발진": "痱子",
   "disease_일광화상": "晒伤",
   "disease_열사병": "中暑",
-  "disease_열부종": "热水肿"
+  "disease_열부종": "热水肿",
+  "shelterType_PUBLIC": "公共",
+  "shelterType_PRIVATE": "私人",
+  "shelterCategory_경로당": "老人会馆",
+  "shelterCategory_주민센터": "社区中心",
+  "shelterCategory_복지관": "福利中心",
+  "shelterCategory_도서관": "图书馆"
 }

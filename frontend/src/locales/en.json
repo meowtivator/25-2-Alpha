@@ -148,5 +148,11 @@
   "disease_열발진": "Heat Rash",
   "disease_일광화상": "Sunburn",
   "disease_열사병": "Heat Stroke",
-  "disease_열부종": "Heat Edema"
+  "disease_열부종": "Heat Edema",
+  "shelterType_PUBLIC": "Public",
+  "shelterType_PRIVATE": "Private",
+  "shelterCategory_경로당": "Senior Center",
+  "shelterCategory_주민센터": "Community Center",
+  "shelterCategory_복지관": "Welfare Center",
+  "shelterCategory_도서관": "Library"
 }
