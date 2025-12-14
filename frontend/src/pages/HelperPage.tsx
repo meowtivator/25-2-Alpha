@@ -7,6 +7,7 @@ import { useTTS } from '@/hooks/useTTS';
 import { submitDiagnosis } from '@/api/symptomApi';
 import { ROUTES } from '@/lib/constants/routes';
 import { useTranslation } from 'react-i18next';
+import { useSettingsStore } from '@/stores/settingsStore';
 
 export default function HelperPage() {
   const navigate = useNavigate();
@@ -18,6 +19,7 @@ export default function HelperPage() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { t, i18n } = useTranslation();
+  const showColdShelters = useSettingsStore((state) => state.showColdShelters);
 
   // i18n 언어에 따라 TTS 언어 매핑
   const getTTSLanguage = (lang: string) => {
@@ -88,7 +90,8 @@ export default function HelperPage() {
         { questionCode: lastQuestionCode, answer: lastAnswer },
       ];
 
-      // 백엔드 API 형식에 맞게 변환: { answers, language }
+      // 백엔드 API 형식에 맞게 변환: { answers, language, seasonType }
+      const seasonType = showColdShelters ? 'COLD' : 'HEAT';
       const diagnosisRequest = {
         answers: finalAnswers.map((ans) => {
           const question = questions.find((q) => q.questionCode === ans.questionCode);
@@ -98,6 +101,7 @@ export default function HelperPage() {
           };
         }),
         language: i18n.language,
+        seasonType: seasonType,
       };
 
       console.log('진단 요청:', diagnosisRequest);
@@ -195,6 +199,15 @@ export default function HelperPage() {
     );
   }
   
+  // 질문이 없는 경우 (로딩 완료 후에도 질문이 없으면)
+  if (!currentQuestion) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <p className="text-body text-foreground">{t('noQuestionsAvailable')}</p>
+      </div>
+    );
+  }
+
   // 질문 화면
   return (
     <div className="flex flex-col h-[calc(100vh-4rem-env(safe-area-inset-bottom))] bg-background">
