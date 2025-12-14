@@ -8,6 +8,7 @@ export interface SymptomQuestion {
   questionText: string;
   questionCode: string;
   symptomCode: string;
+  seasonType: 'HEAT' | 'COLD';
   sortOrder: number;
   active: boolean;
   createdAt?: string;
@@ -28,6 +29,7 @@ export interface DiagnosisRequest {
     answer: string;
   }>;
   language: string;
+  seasonType: 'HEAT' | 'COLD';
 }
 
 /**

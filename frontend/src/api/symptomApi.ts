@@ -11,13 +11,20 @@ import type {
 
 /**
  * 온열질환 증상 질문 목록 조회
+ * @param seasonType - 계절 타입 (HEAT: 더위, COLD: 추위)
  * @returns 질문 목록 (sortOrder 기준 정렬)
  * @throws API 호출 실패 시 에러
  */
-export async function fetchSymptomQuestions(): Promise<SymptomQuestion[]> {
+export async function fetchSymptomQuestions(
+  seasonType: 'HEAT' | 'COLD' = 'HEAT'
+): Promise<SymptomQuestion[]> {
   try {
+    const params = new URLSearchParams({
+      seasonType,
+    });
+
     const response = await fetch(
-      `${API_BASE_URL}${API_ENDPOINTS.SYMPTOM_QUESTIONS}`,
+      `${API_BASE_URL}${API_ENDPOINTS.SYMPTOM_QUESTIONS}?${params}`,
       {
         method: 'GET',
         headers: {
