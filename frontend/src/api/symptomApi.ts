@@ -83,13 +83,20 @@ export async function submitDiagnosis(
 
 /**
  * 온열질환 전체 가이드 조회 (suspected = false)
+ * @param seasonType - 계절 타입 (HEAT: 더위, COLD: 추위)
  * @returns 질환별 가이드 목록
  * @throws API 호출 실패 시 에러
  */
-export async function fetchSymptomGuides(): Promise<SymptomGuide[]> {
+export async function fetchSymptomGuides(
+  seasonType: 'HEAT' | 'COLD' = 'HEAT'
+): Promise<SymptomGuide[]> {
   try {
+    const params = new URLSearchParams({
+      seasonType,
+    });
+
     const response = await fetch(
-      `${API_BASE_URL}${API_ENDPOINTS.SYMPTOM_GUIDES}`,
+      `${API_BASE_URL}${API_ENDPOINTS.SYMPTOM_GUIDES}?${params}`,
       {
         method: 'GET',
         headers: {
@@ -140,6 +147,39 @@ export async function fetchDiagnosisDetail(
     return data;
   } catch (error) {
     console.error('상세 진단 정보 조회 실패:', error);
+    throw error;
+  }
+}
+
+/**
+ * 상세 진단 가이드 목록 조회 (suspected = true)
+ * @param assessmentId - 진단 ID
+ * @returns 질환별 가이드 목록
+ * @throws API 호출 실패 시 에러
+ */
+export async function fetchAssessmentGuides(
+  assessmentId: number
+): Promise<SymptomGuide[]> {
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}${API_ENDPOINTS.SYMPTOM_ASSESSMENT_GUIDES(assessmentId)}`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept-Language': i18n.language,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data: SymptomGuide[] = await response.json();
+    return data;
+  } catch (error) {
+    console.error('상세 진단 가이드 조회 실패:', error);
     throw error;
   }
 }

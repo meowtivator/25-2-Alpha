@@ -4,29 +4,30 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
   fetchSymptomGuides,
-  fetchDiagnosisDetail,
   fetchAIResult,
+  fetchAssessmentGuides,
 } from '@/api/symptomApi';
 import type {
   SymptomGuide,
-  DiagnosisDetail,
   AIResult,
 } from '@/types/symptom';
 import { ROUTES } from '@/lib/constants/routes';
 import { symptomGuideData } from '@/data/symptomGuideData';
+import { useSettingsStore } from '@/stores/settingsStore';
 
 export default function GuidelinePage() {
   const location = useLocation();
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
+  const showColdShelters = useSettingsStore((state) => state.showColdShelters);
+  const seasonType: 'HEAT' | 'COLD' = showColdShelters ? 'COLD' : 'HEAT';
   const { suspected, assessmentId } = location.state as {
     suspected: boolean;
     assessmentId: number;
   };
 
   const [guides, setGuides] = useState<SymptomGuide[]>([]);
-  const [diagnosisDetail, setDiagnosisDetail] =
-    useState<DiagnosisDetail | null>(null);
+  const [assessmentGuides, setAssessmentGuides] = useState<SymptomGuide[]>([]);
   const [aiResult, setAIResult] = useState<AIResult | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -39,15 +40,16 @@ export default function GuidelinePage() {
 
         if (suspected) {
           // 온열질환 의심되는 경우: AI 진단 + 상세 진단
-          const [aiData, detailData] = await Promise.all([
+          const [aiData, guidesData] = await Promise.all([
             fetchAIResult(assessmentId),
-            fetchDiagnosisDetail(assessmentId),
+            fetchAssessmentGuides(assessmentId),
           ]);
           setAIResult(aiData);
-          setDiagnosisDetail(detailData);
+          // guidesData가 배열이 아닐 경우를 대비해 배열로 보장
+          setAssessmentGuides(Array.isArray(guidesData) ? guidesData : [guidesData]);
         } else {
           // 온열질환 의심되지 않는 경우: 전체 가이드
-          const guidesData = await fetchSymptomGuides();
+          const guidesData = await fetchSymptomGuides(seasonType);
           setGuides(guidesData);
         }
       } catch (err) {
@@ -59,7 +61,7 @@ export default function GuidelinePage() {
     };
 
     fetchData();
-  }, [suspected, assessmentId, i18n.language, t]);
+  }, [suspected, assessmentId, i18n.language, t, seasonType]);
 
   if (loading) {
     return (
@@ -101,7 +103,7 @@ export default function GuidelinePage() {
               {/* 정의 */}
               <div className="mb-4">
                 <h3 className="text-button mb-2">{t('definition')}</h3>
-                <p className="text-body text-foreground/80">
+                <p className="text-body text-foreground/80 whitespace-pre-line">
                   {symptomGuideData[guide.disease]?.[i18n.language]?.definition || guide.definition}
                 </p>
               </div>
@@ -163,42 +165,46 @@ export default function GuidelinePage() {
       {/* 구분선 */}
       <div className="border-t border-foreground/20 my-6"></div>
 
-      {/* 상세 진단 */}
-      {diagnosisDetail && (
-        <div className="bg-blue-50 border border-blue-200 rounded-3xl p-5">
-          <h2 className="text-h2 mb-3">{t(`disease_${diagnosisDetail.disease}`)}</h2>
+      {/* 상세 진단 - 여러 질병이 있을 수 있으므로 배열로 처리 */}
+      {assessmentGuides.length > 0 && (
+        <div className="space-y-4">
+          {assessmentGuides.map((detail, index) => (
+            <div key={index} className="bg-blue-50 border border-blue-200 rounded-3xl p-5">
+              <h2 className="text-h2 mb-3">{t(`disease_${detail.disease}`)}</h2>
 
-          {/* 정의 */}
-          <div className="mb-4">
-            <h3 className="text-button mb-2">{t('definition')}</h3>
-            <p className="text-body text-foreground/80">
-              {symptomGuideData[diagnosisDetail.disease]?.[i18n.language]?.definition || diagnosisDetail.definition}
-            </p>
-          </div>
+              {/* 정의 */}
+              <div className="mb-4">
+                <h3 className="text-button mb-2">{t('definition')}</h3>
+                <p className="text-body text-foreground/80 whitespace-pre-line">
+                  {symptomGuideData[detail.disease]?.[i18n.language]?.definition || detail.definition}
+                </p>
+              </div>
 
-          {/* 증상 */}
-          <div className="mb-4">
-            <h3 className="text-button mb-2">{t('symptoms')}</h3>
-            <ul className="list-disc list-inside space-y-1">
-              {(symptomGuideData[diagnosisDetail.disease]?.[i18n.language]?.symptoms || diagnosisDetail.symptoms).map((symptom, idx) => (
-                <li key={idx} className="text-body text-foreground/80">
-                  {symptom}
-                </li>
-              ))}
-            </ul>
-          </div>
+              {/* 증상 */}
+              <div className="mb-4">
+                <h3 className="text-button mb-2">{t('symptoms')}</h3>
+                <ul className="list-disc list-inside space-y-1">
+                  {(symptomGuideData[detail.disease]?.[i18n.language]?.symptoms || detail.symptoms).map((symptom, idx) => (
+                    <li key={idx} className="text-body text-foreground/80">
+                      {symptom}
+                    </li>
+                  ))}
+                </ul>
+              </div>
 
-          {/* 대응법 */}
-          <div>
-            <h3 className="text-button mb-2">{t('response')}</h3>
-            <ul className="list-disc list-inside space-y-1">
-              {(symptomGuideData[diagnosisDetail.disease]?.[i18n.language]?.advice || diagnosisDetail.advice).map((item, idx) => (
-                <li key={idx} className="text-body text-foreground/80">
-                  {item}
-                </li>
-              ))}
-            </ul>
-          </div>
+              {/* 대응법 */}
+              <div>
+                <h3 className="text-button mb-2">{t('response')}</h3>
+                <ul className="list-disc list-inside space-y-1">
+                  {(symptomGuideData[detail.disease]?.[i18n.language]?.advice || detail.advice).map((item, idx) => (
+                    <li key={idx} className="text-body text-foreground/80">
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          ))}
         </div>
       )}
     </div>
