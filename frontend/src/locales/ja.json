@@ -7,6 +7,7 @@
   "recentSearch": "最近の検索",
   "searchHint": "シェルター名または住所を検索してください",
   "searchShelterPlaceholder": "シェルターを検索",
+  "noRecentSearches": "最近の検索履歴がありません",
   "mapArea": "地図エリア",
   "shelterMarker": "シェルターマーカー",
   "shelterDetailFetchFailed": "シェルター情報の取得に失敗しました。",

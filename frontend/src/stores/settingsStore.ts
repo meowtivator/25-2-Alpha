@@ -3,6 +3,17 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
 type TypographyMode = 'default' | 'senior';
+type SeasonType = 'HEAT' | 'COLD';
+
+// 최근 검색 아이템 타입
+export interface RecentSearchItem {
+  id: string; // 고유 ID (timestamp 기반)
+  type: 'shelter' | 'keyword'; // 장소 또는 검색어
+  shelterId?: number; // 장소인 경우 쉼터 ID
+  name: string; // 표시할 이름
+  address?: string; // 장소인 경우 주소
+  timestamp: number; // 검색 시간
+}
 
 // store(저장소)의 구조
 interface SettingsStore {
@@ -26,6 +37,14 @@ interface SettingsStore {
 
   autoLocateOnLaunch: boolean;
   setAutoLocateOnLaunch: (auto: boolean) => void;
+
+  // 최근 검색 (HEAT/COLD 별로 분리)
+  recentSearchesHeat: RecentSearchItem[];
+  recentSearchesCold: RecentSearchItem[];
+  addRecentSearch: (item: Omit<RecentSearchItem, 'id' | 'timestamp'>, seasonType: SeasonType) => void;
+  removeRecentSearch: (id: string, seasonType: SeasonType) => void;
+  clearRecentSearches: (seasonType: SeasonType) => void;
+  getRecentSearches: (seasonType: SeasonType) => RecentSearchItem[];
 }
 
 // typescript의 generic으로 타입 지정.
@@ -81,6 +100,64 @@ export const useSettingsStore = create<SettingsStore>()(
 
       autoLocateOnLaunch: true,
       setAutoLocateOnLaunch: (auto) => set({ autoLocateOnLaunch: auto }),
+
+      // 최근 검색 기본값
+      recentSearchesHeat: [],
+      recentSearchesCold: [],
+
+      // 최근 검색 추가 (최대 10개 유지, 최신순)
+      addRecentSearch: (item, seasonType) =>
+        set((state) => {
+          const searchList = seasonType === 'HEAT' ? state.recentSearchesHeat : state.recentSearchesCold;
+          const newItem: RecentSearchItem = {
+            ...item,
+            id: `${Date.now()}-${Math.random()}`,
+            timestamp: Date.now(),
+          };
+
+          // 중복 제거 (같은 shelterId 또는 같은 검색어)
+          const filteredList = searchList.filter((existing) => {
+            if (item.type === 'shelter' && existing.type === 'shelter') {
+              return existing.shelterId !== item.shelterId;
+            }
+            if (item.type === 'keyword' && existing.type === 'keyword') {
+              return existing.name !== item.name;
+            }
+            return true;
+          });
+
+          // 최신 항목을 맨 앞에 추가하고 최대 10개로 제한
+          const updatedList = [newItem, ...filteredList].slice(0, 10);
+
+          return seasonType === 'HEAT'
+            ? { recentSearchesHeat: updatedList }
+            : { recentSearchesCold: updatedList };
+        }),
+
+      // 최근 검색 삭제
+      removeRecentSearch: (id, seasonType) =>
+        set((state) => {
+          const searchList = seasonType === 'HEAT' ? state.recentSearchesHeat : state.recentSearchesCold;
+          const updatedList = searchList.filter((item) => item.id !== id);
+
+          return seasonType === 'HEAT'
+            ? { recentSearchesHeat: updatedList }
+            : { recentSearchesCold: updatedList };
+        }),
+
+      // 최근 검색 전체 삭제
+      clearRecentSearches: (seasonType) =>
+        set(() =>
+          seasonType === 'HEAT'
+            ? { recentSearchesHeat: [] }
+            : { recentSearchesCold: [] }
+        ),
+
+      // 최근 검색 목록 가져오기
+      getRecentSearches: (seasonType) => {
+        const state = useSettingsStore.getState();
+        return seasonType === 'HEAT' ? state.recentSearchesHeat : state.recentSearchesCold;
+      },
     }),
     // persist 옵션
     {

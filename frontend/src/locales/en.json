@@ -7,6 +7,7 @@
   "recentSearch": "Recent",
   "searchHint": "Search a Cooling Center/address",
   "searchShelterPlaceholder": "Search shelter location",
+  "noRecentSearches": "No recent searches",
   "mapArea": "Map area",
   "shelterMarker": "Shelter marker",
   "shelterDetailFetchFailed": "Failed to load shelter information.",

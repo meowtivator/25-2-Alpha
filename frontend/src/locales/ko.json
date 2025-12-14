@@ -7,6 +7,7 @@
   "recentSearch": "최근 검색",
   "searchHint": "쉼터의 이름, 주소를 검색하세요.",
   "searchShelterPlaceholder": "쉼터 위치를 검색하세요.",
+  "noRecentSearches": "최근 검색 내역이 없습니다",
   "mapArea": "지도 영역",
   "shelterMarker": "쉼터 위치 마커",
   "shelterDetailFetchFailed": "쉼터 정보를 불러오는데 실패했습니다.",
