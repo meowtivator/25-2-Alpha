@@ -7,14 +7,16 @@ import { Map, CustomOverlayMap } from 'react-kakao-maps-sdk';
 import { SearchBar } from '@/components/ui/SearchBar';
 import { ShelterInfoModal } from '@/components/map/ShelterInfoModal';
 import { MarkerIcon, CurrentLocationIcon } from '@/assets/icons';
-import type { ShelterDetail } from '@/types/shelter';
+import type { ShelterDetail, ShelterGroup } from '@/types/shelter';
 import { ROUTES } from '@/lib/constants/routes';
 import { useSettingsStore } from '@/stores/settingsStore';
+import { useNearbyShelters } from '@/hooks/useNearbyShelters';
+import { fetchShelterDetail } from '@/api/shelterApi';
 
 export default function HomePage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { autoLocateOnLaunch } = useSettingsStore();
+  const { autoLocateOnLaunch, showColdShelters } = useSettingsStore();
   const { t } = useTranslation();
   const mapLabel = t('mapArea');
   const markerLabel = t('shelterMarker');
@@ -41,6 +43,13 @@ export default function HomePage() {
 
   // 현재 위치 가져오기 완료 여부 - ref를 사용해 동기적으로 체크
   const hasInitializedLocationRef = useRef(false);
+
+  // 주변 쉼터 가져오기
+  const { shelters: nearbyShelters } = useNearbyShelters({
+    latitude: userLocation?.latitude ?? 37.5665,
+    longitude: userLocation?.longitude ?? 126.978,
+    enabled: userLocation !== null,
+  });
 
   // SearchPage에서 전달받은 state 처리 (가장 먼저 실행)
   useEffect(() => {
@@ -120,6 +129,29 @@ export default function HomePage() {
     setIsModalOpen(true); // 마커 클릭 시 모달 열기
   };
 
+  // 주변 쉼터 그룹 마커 클릭 핸들러
+  const handleShelterGroupClick = async (shelterGroup: ShelterGroup) => {
+    try {
+      const seasonType: 'HEAT' | 'COLD' = showColdShelters ? 'COLD' : 'HEAT';
+
+      // 그룹의 첫 번째 쉼터 상세 정보 가져오기
+      const firstShelterId = shelterGroup.shelters[0].id;
+      const shelterDetail = await fetchShelterDetail(firstShelterId, seasonType);
+
+      // 선택된 쉼터로 설정하고 모달 열기
+      setSelectedShelter(shelterDetail);
+      setIsModalOpen(true);
+
+      // 지도 중심을 해당 쉼터로 이동
+      setMapCenter({
+        latitude: shelterDetail.lat,
+        longitude: shelterDetail.lon,
+      });
+    } catch (error) {
+      console.error('쉼터 상세 정보 조회 실패:', error);
+    }
+  };
+
   return (
     <div className="relative w-full h-[calc(100vh-4rem-env(safe-area-inset-bottom))]">
       {/* 지도 - 화면 높이에서 하단 탭바(4rem) 및 Safe Area 제외 */}
@@ -141,7 +173,34 @@ export default function HomePage() {
             </CustomOverlayMap>
           )}
 
-          {/* 선택된 쉼터 마커 */}
+          {/* 주변 쉼터 그룹 마커들 */}
+          {nearbyShelters.map((shelterGroup) => {
+            // 선택된 쉼터와 같은 위치의 마커는 표시하지 않음 (중복 방지)
+            const isSelected = selectedShelter &&
+              selectedShelter.lat === shelterGroup.lat &&
+              selectedShelter.lon === shelterGroup.lon;
+
+            if (isSelected) return null;
+
+            return (
+              <CustomOverlayMap
+                key={shelterGroup.groupId}
+                position={{ lat: shelterGroup.lat, lng: shelterGroup.lon }}
+                yAnchor={1}
+              >
+                <div
+                  onClick={() => handleShelterGroupClick(shelterGroup)}
+                  className="cursor-pointer transform hover:scale-110 transition-transform"
+                  role="button"
+                  aria-label={markerLabel}
+                >
+                  <MarkerIcon className="text-blue-500" size={30} />
+                </div>
+              </CustomOverlayMap>
+            );
+          })}
+
+          {/* 선택된 쉼터 마커 (강조 표시) */}
           {selectedShelter && (
             <CustomOverlayMap
               position={{ lat: selectedShelter.lat, lng: selectedShelter.lon }}

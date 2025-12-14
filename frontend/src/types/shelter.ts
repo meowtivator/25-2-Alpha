@@ -81,6 +81,26 @@ export interface ShelterDetail {
 }
 
 /**
+ * 쉼터 그룹 내 쉼터 아이템 (GET /api/shelters/in-bounds-grouped)
+ */
+export interface ShelterInGroup {
+  id: number;
+  name: string;
+}
+
+/**
+ * 쉼터 그룹 (GET /api/shelters/in-bounds-grouped)
+ */
+export interface ShelterGroup {
+  groupId: string;
+  lat: number;
+  lon: number;
+  addrRoad: string;
+  addrJibun: string;
+  shelters: ShelterInGroup[];
+}
+
+/**
  * 쉼터 정보 (레거시 - 호환성 유지)
  */
 export interface ShelterResult {

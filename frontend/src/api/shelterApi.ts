@@ -1,6 +1,6 @@
 // src/api/shelterApi.ts
-import { API_BASE_URL } from '@/lib/constants/api';
-import type { ShelterSearchResponse, ShelterDetail } from '@/types/shelter';
+import { API_BASE_URL, API_ENDPOINTS } from '@/lib/constants/api';
+import type { ShelterSearchResponse, ShelterDetail, ShelterGroup } from '@/types/shelter';
 
 /**
  * 쉼터 검색
@@ -86,6 +86,60 @@ export async function fetchShelterDetail(
     return data;
   } catch (error) {
     console.error('쉼터 상세 정보 조회 실패:', error);
+    throw error;
+  }
+}
+
+/**
+ * 지도 영역 내 쉼터 그룹 조회
+ * @param minLat - 최소 위도
+ * @param maxLat - 최대 위도
+ * @param minLon - 최소 경도
+ * @param maxLon - 최대 경도
+ * @param seasonType - 계절 타입 (HEAT: 더위, COLD: 추위)
+ * @param type - 쉼터 타입 (PUBLIC: 공공, PRIVATE: 민간)
+ * @returns 쉼터 그룹 목록
+ */
+export async function fetchSheltersInBounds(
+  minLat: number,
+  maxLat: number,
+  minLon: number,
+  maxLon: number,
+  seasonType: SeasonType = 'HEAT',
+  type?: ShelterType
+): Promise<ShelterGroup[]> {
+  try {
+    const params = new URLSearchParams({
+      minLat: minLat.toString(),
+      maxLat: maxLat.toString(),
+      minLon: minLon.toString(),
+      maxLon: maxLon.toString(),
+      seasonType,
+    });
+
+    // type이 제공된 경우에만 추가
+    if (type) {
+      params.append('type', type);
+    }
+
+    const response = await fetch(
+      `${API_BASE_URL}${API_ENDPOINTS.SHELTERS_IN_BOUNDS_GROUPED}?${params}`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data: ShelterGroup[] = await response.json();
+    return data;
+  } catch (error) {
+    console.error('지도 영역 내 쉼터 조회 실패:', error);
     throw error;
   }
 }
