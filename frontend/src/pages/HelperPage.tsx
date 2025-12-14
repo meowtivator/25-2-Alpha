@@ -91,7 +91,7 @@ export default function HelperPage() {
       ];
 
       // 백엔드 API 형식에 맞게 변환: { answers, language, seasonType }
-      const seasonType = showColdShelters ? 'COLD' : 'HEAT';
+      const seasonType: 'HEAT' | 'COLD' = showColdShelters ? 'COLD' : 'HEAT';
       const diagnosisRequest = {
         answers: finalAnswers.map((ans) => {
           const question = questions.find((q) => q.questionCode === ans.questionCode);
