@@ -56,7 +56,7 @@ interface SettingsStore {
 export const useSettingsStore = create<SettingsStore>()(
   persist(
     // 스토어 로직
-    (set) => ({
+    (set, get) => ({
       // 기본값: 일반 사용자 모드
       typographyMode: 'default',
 
@@ -154,8 +154,8 @@ export const useSettingsStore = create<SettingsStore>()(
         ),
 
       // 최근 검색 목록 가져오기
-      getRecentSearches: (seasonType) => {
-        const state = useSettingsStore.getState();
+      getRecentSearches: (seasonType: SeasonType): RecentSearchItem[] => {
+        const state = get();
         return seasonType === 'HEAT' ? state.recentSearchesHeat : state.recentSearchesCold;
       },
     }),

@@ -10,7 +10,7 @@ import { AlertIcon } from '@/assets/icons';
 import { searchShelters, fetchShelterDetail } from '@/api/shelterApi';
 import { ROUTES } from '@/lib/constants/routes';
 import { useTranslation } from 'react-i18next';
-import { useSettingsStore } from '@/stores/settingsStore';
+import { useSettingsStore, type RecentSearchItem } from '@/stores/settingsStore';
 
 export default function SearchPage() {
   const navigate = useNavigate();
@@ -91,7 +91,7 @@ export default function SearchPage() {
   };
 
   // 최근 검색 아이템 선택 핸들러
-  const handleRecentSearchSelect = async (item: typeof recentSearches[0]) => {
+  const handleRecentSearchSelect = async (item: RecentSearchItem) => {
     if (item.type === 'shelter' && item.shelterId) {
       // 장소인 경우 해당 장소로 이동
       await handleNavigate(item.shelterId, item.name, item.address);
