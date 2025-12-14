@@ -6,4 +6,5 @@ export const API_ENDPOINTS = {
   SYMPTOM_GUIDES: '/api/symptom/guides',
   SYMPTOM_DIAGNOSIS_DETAIL: (assessmentId: number) => `/api/symptom/diagnosis/${assessmentId}`,
   SYMPTOM_AI_RESULT: (assessmentId: number) => `/api/symptom/assessment/${assessmentId}/ai-result`,
+  SHELTERS_IN_BOUNDS_GROUPED: '/api/shelters/in-bounds-grouped',
 } as const;
